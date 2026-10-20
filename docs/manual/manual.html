@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Campaign Forge — Manual de instruções</title>
+<style>
+  :root { --carvao:#2B2B2B; --taupe:#8C7B6B; --areia:#E9E2D8; --marfim:#FAF7F2; --destaque:#B8A58F; --amber:#FFF4D6; --azul:#E6F0FB; }
+  @page { size: A4; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { font-family: Inter, "Liberation Sans", Arial, sans-serif; font-size: 10pt; line-height: 1.5; color: var(--carvao); margin: 0; }
+  h1, h2, h3, .serif { font-family: "Bitstream Charter", Charter, Caladea, "Liberation Serif", serif; font-weight: normal; }
+  h1 { font-size: 24pt; margin: 0 0 4mm; letter-spacing: -0.01em; }
+  h2 { font-size: 15pt; margin: 8mm 0 2mm; border-bottom: 1px solid var(--areia); padding-bottom: 1.5mm; break-after: avoid; }
+  h3 { font-size: 12pt; margin: 5mm 0 1.5mm; break-after: avoid; }
+  h4 { font-size: 9pt; text-transform: uppercase; letter-spacing: .12em; color: var(--taupe); margin: 4mm 0 1mm; break-after: avoid; }
+  p { margin: 0 0 2.2mm; }
+  ul, ol { margin: 0 0 2.5mm; padding-left: 5.5mm; }
+  li { margin-bottom: .8mm; }
+  .chapter { break-before: page; }
+  .kicker { font-size: 8pt; text-transform: uppercase; letter-spacing: .25em; color: var(--taupe); margin-bottom: 1mm; }
+  .lead { font-size: 11pt; color: #4a4540; margin-bottom: 4mm; }
+  figure { margin: 3mm 0 4mm; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid var(--areia); border-radius: 2mm; display: block; }
+  figure.half img { width: 70%; margin: 0 auto; }
+  figcaption { font-size: 8pt; color: var(--taupe); margin-top: 1.2mm; text-align: center; }
+  table { width: 100%; border-collapse: collapse; margin: 1.5mm 0 4mm; font-size: 8.8pt; break-inside: auto; }
+  th { text-align: left; font-weight: 600; background: var(--areia); padding: 1.6mm 2mm; font-size: 8pt; text-transform: uppercase; letter-spacing: .04em; }
+  td { padding: 1.5mm 2mm; border-bottom: 1px solid #eee7dc; vertical-align: top; }
+  tr { break-inside: avoid; }
+  td:first-child { font-weight: 600; width: 32%; }
+  table.free td:first-child { font-weight: normal; width: auto; }
+  .note, .warn, .tip { border-radius: 2mm; padding: 2.5mm 3.5mm; margin: 2.5mm 0 4mm; break-inside: avoid; font-size: 9.2pt; }
+  .note { background: var(--marfim); border-left: 3px solid var(--destaque); }
+  .warn { background: var(--amber); border-left: 3px solid #D9A400; }
+  .tip { background: var(--azul); border-left: 3px solid #5B8DD6; }
+  .note b:first-child, .warn b:first-child, .tip b:first-child { display: block; margin-bottom: .6mm; }
+  .disclaimer { text-align: center; font-size: 8pt; letter-spacing: .12em; font-weight: 600; background: var(--areia); border-radius: 2mm; padding: 2.2mm; margin: 3mm 0; }
+  .ui { font-weight: 600; background: var(--areia); border-radius: 1mm; padding: 0 1.2mm; font-size: 9pt; white-space: nowrap; }
+  .flow { display: flex; flex-wrap: wrap; gap: 1.2mm; align-items: center; margin: 1.5mm 0 3.5mm; font-size: 8.5pt; }
+  .flow span { background: var(--marfim); border: 1px solid var(--areia); border-radius: 5mm; padding: .8mm 2.6mm; }
+  .flow i { color: var(--taupe); font-style: normal; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .steps { counter-reset: s; list-style: none; padding-left: 0; }
+  .steps > li { counter-increment: s; position: relative; padding-left: 8mm; margin-bottom: 2mm; }
+  .steps > li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 5.5mm; height: 5.5mm; border-radius: 50%; background: var(--carvao); color: #fff; font-size: 8pt; display: grid; place-items: center; }
+  kbd { font-family: "JetBrains Mono", monospace; font-size: 8pt; border: 1px solid #cfc6b8; border-bottom-width: 2px; border-radius: 1mm; padding: 0 1.2mm; background: #fff; }
+  code { font-family: "JetBrains Mono", monospace; font-size: 8.3pt; background: #f3eee6; padding: 0 1mm; border-radius: .8mm; }
+  /* capa */
+  .cover { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; padding: 12mm 4mm 6mm; }
+  .cover .logo { width: 22mm; height: 22mm; border-radius: 5mm; background: var(--carvao); display: grid; place-items: center; }
+  .cover h1 { font-size: 44pt; line-height: 1.05; margin: 0; }
+  .cover .sub { font-size: 14pt; color: var(--taupe); margin-top: 4mm; }
+  .cover .meta { font-size: 9pt; color: var(--taupe); border-top: 1px solid var(--areia); padding-top: 4mm; }
+  .toc { columns: 2; column-gap: 8mm; font-size: 9.5pt; }
+  .toc a { color: inherit; text-decoration: none; }
+  .toc li { break-inside: avoid; margin-bottom: 1.2mm; }
+  .toc > ol { padding-left: 5mm; }
+  .toc ol ol { font-size: 8.6pt; color: #5a534c; padding-left: 4mm; margin-top: .6mm; }
+</style>
+</head>
+<body>
+
+<!-- ============ CAPA ============ -->
+<section class="cover">
+  <div>
+    <div class="logo"><svg width="60" height="60" viewBox="0 0 64 64"><path d="M20 44 32 18l12 26M25 35h14" fill="none" stroke="#E9E2D8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  </div>
+  <div>
+    <div class="kicker">Manual de instruções</div>
+    <h1>Campaign Forge</h1>
+    <div class="sub">Plataforma colaborativa de planejamento publicitário,<br>simulação e documentação acadêmica</div>
+    <p style="margin-top:10mm;max-width:150mm">Este manual descreve cada tela, campo, botão e regra do site, quem pode fazer o quê e como as funções se conectam. Ele vale para qualquer projeto. Os exemplos usam o projeto de demonstração <b>Awake Home Decor</b>.</p>
+  </div>
+  <div class="meta">
+    <div class="disclaimer" style="margin:0 0 4mm">SIMULAÇÃO ACADÊMICA — RESULTADOS HIPOTÉTICOS. NÃO REPRESENTAM DESEMPENHO GARANTIDO.</div>
+    Versão do manual: outubro de 2026 · Os nomes de botões e campos aparecem <span class="ui">assim</span>, exatamente como estão na tela.
+  </div>
+</section>
+
+<!-- ============ SUMÁRIO ============ -->
+<section class="chapter">
+  <div class="kicker">Conteúdo</div>
+  <h1>Sumário</h1>
+  <nav class="toc"><ol>
+    <li><a href="#c1">Visão geral e conceitos</a><ol><li>O que é o Campaign Forge</li><li>Regras de honestidade dos dados</li><li>Papéis e permissões</li></ol></li>
+    <li><a href="#c2">Acesso e navegação</a><ol><li>Primeiro acesso</li><li>Login, senha e convites</li><li>Projetos</li><li>Menu, barra superior e notificações</li></ol></li>
+    <li><a href="#c3">Dashboard</a></li>
+    <li><a href="#c4">Equipe</a><ol><li>Chat</li><li>Central de Decisões</li><li>Tarefas</li><li>Calendário</li><li>Aprovações</li><li>Arquivos</li></ol></li>
+    <li><a href="#c5">Criação &amp; Campanha</a><ol><li>Instagram Studio</li><li>Calendário editorial</li><li>Campanhas e testes A/B</li></ol></li>
+    <li><a href="#c6">Simulação</a><ol><li>Conceitos comuns</li><li>Métricas &amp; investimento</li><li>Growth Simulator</li><li>Planejamento de verba</li></ol></li>
+    <li><a href="#c7">Planejamento</a><ol><li>Planejamento Digital</li><li>Pesquisa &amp; SWOT</li></ol></li>
+    <li><a href="#c8">Entrega</a><ol><li>Documentos</li><li>Relatório de contribuições</li><li>Apresentação</li></ol></li>
+    <li><a href="#c9">Projeto</a><ol><li>Configurações</li><li>Auditoria</li></ol></li>
+    <li><a href="#c10">Comportamentos gerais</a><ol><li>Notificações</li><li>Atualização em tempo real</li><li>Padrões da interface</li></ol></li>
+    <li><a href="#c11">Roteiro de trabalho sugerido</a></li>
+    <li><a href="#c12">Perguntas frequentes e solução de problemas</a></li>
+  </ol></nav>
+</section>
+
+<!-- ============ 1. VISÃO GERAL ============ -->
+<section class="chapter" id="c1">
+  <div class="kicker">Capítulo 1</div>
+  <h1>Visão geral e conceitos</h1>
+  <p class="lead">O Campaign Forge reúne em um só lugar o trabalho de uma agência ao planejar uma campanha: conversa da equipe, tarefas, decisões, criação para Instagram, simulações de investimento e resultados, pesquisa, documentos acadêmicos e apresentação final.</p>
+
+  <h2>1.1 O que é o Campaign Forge</h2>
+  <ul>
+    <li><b>Agência:</b> o grupo de pessoas (a equipe). Cada agência tem os dados isolados: uma agência nunca vê os projetos de outra.</li>
+    <li><b>Projeto:</b> uma campanha para uma marca/cliente, por exemplo "Awake Home Decor". Uma agência pode ter vários projetos.</li>
+    <li><b>Módulos:</b> as telas do menu lateral, agrupadas em Visão geral, Equipe, Criação &amp; Campanha, Simulação, Planejamento, Entrega e Projeto.</li>
+    <li><b>Independente de contas reais:</b> o site não se conecta ao Instagram, ao Meta Ads nem a nenhuma ferramenta externa. Nada é publicado de verdade. Os números de simulação são hipóteses que a equipe declara.</li>
+  </ul>
+
+  <h2>1.2 Regras de honestidade dos dados</h2>
+  <p>O site foi feito para trabalho acadêmico e nunca inventa dados. Isso aparece de várias formas:</p>
+  <table>
+    <tr><th>Elemento</th><th>Significado</th></tr>
+    <tr><td>Faixa de aviso</td><td><span class="ui">SIMULAÇÃO ACADÊMICA — RESULTADOS HIPOTÉTICOS. NÃO REPRESENTAM DESEMPENHO GARANTIDO.</span> Aparece em toda tela, documento, slide e arquivo CSV que contenha números simulados.</td></tr>
+    <tr><td>Etiqueta "hipotético"</td><td>O número saiu de uma simulação, não de dado real.</td></tr>
+    <tr><td>Etiqueta "real"</td><td>O número foi informado manualmente pela equipe a partir de dados reais (ex.: Dashboard de KPIs), sempre com a fonte.</td></tr>
+    <tr><td>Origem da premissa</td><td>Cada número que alimenta um simulador tem uma etiqueta clicável: <span class="ui">Briefing confirmado</span>, <span class="ui">Fonte externa documentada</span> (exige referência), <span class="ui">Hipótese da equipe</span>, <span class="ui">Cálculo</span> ou <span class="ui">Dado real informado</span>.</td></tr>
+    <tr><td>"Pendente de preenchimento/validação"</td><td>Marca uma lacuna: informação que ainda falta ou não foi confirmada. Aparece destacada em amarelo nos documentos e slides, e o editor conta quantas lacunas restam.</td></tr>
+    <tr><td>Orçamento único × mensal</td><td>São modos diferentes. O sistema <b>nunca</b> multiplica um orçamento único por 12 meses automaticamente.</td></tr>
+    <tr><td>Integrações</td><td>Pixel, API de Conversões etc. só podem ser marcados como "validados" com evidência registrada. Nenhuma integração é declarada ativa sem prova.</td></tr>
+  </table>
+
+  <h2>1.3 Papéis e permissões</h2>
+  <p>Cada pessoa tem um papel na agência, e esse papel vale para todos os projetos dela. Os papéis vão do menor para o maior acesso:</p>
+  <table>
+    <tr><th>Papel</th><th>O que pode fazer</th></tr>
+    <tr><td>Visualizador</td><td>Lê tudo e comenta. Também pode enviar mensagens no chat, criar grupos e conversas privadas, sugerir alterações em documentos e exportar documentos e a apresentação. Não envia arquivos e não edita conteúdo. Uso típico: professor ou cliente.</td></tr>
+    <tr><td>Integrante</td><td>Tudo do Visualizador, mais: cria e edita conteúdo colaborativo (tarefas, publicações, cenários, documentos…), envia arquivos e solicita aprovações.</td></tr>
+    <tr><td>Coordenador</td><td>Tudo do Integrante, mais: aprovações finais, decisões, verba aprovada, convites (até o papel de Coordenador) e acesso à Auditoria. Pode excluir qualquer item.</td></tr>
+    <tr><td>Administrador</td><td>Tudo, incluindo configurações do projeto e da marca, papéis da equipe, remoção de integrantes e exclusão do projeto. Pode convidar com qualquer papel.</td></tr>
+  </table>
+  <div class="note"><b>Regra de exclusão</b>Coordenadores e administradores podem excluir qualquer item. Integrantes só excluem o que eles mesmos criaram. Itens de listas simples, como concorrentes, SWOT, diagnóstico, checklists, marcos, referências e destaques, não registram autor, então apenas coordenadores ou administradores conseguem excluí-los. Mensagem de bloqueio: <i>"Apenas o autor ou coordenadores podem excluir."</i></div>
+</section>
+
+<!-- ============ 2. ACESSO ============ -->
+<section class="chapter" id="c2">
+  <div class="kicker">Capítulo 2</div>
+  <h1>Acesso e navegação</h1>
+
+  <h2>2.1 Primeiro acesso (Configuração inicial)</h2>
+  <p>Na primeiríssima visita ao site, quando ainda não existe nenhum usuário, abre-se a tela <span class="ui">Configuração inicial</span>. Ela cria o administrador e a agência.</p>
+  <table>
+    <tr><th>Campo</th><th>O que preencher</th></tr>
+    <tr><td>Seu nome</td><td>Nome do administrador.</td></tr>
+    <tr><td>E-mail</td><td>Será o login do administrador.</td></tr>
+    <tr><td>Senha (mín. 10, letras e números)</td><td>No mínimo 10 caracteres, com letras e números.</td></tr>
+    <tr><td>Agência / equipe</td><td>Nome da agência, ex.: Awake.</td></tr>
+  </table>
+  <p>O botão <span class="ui">Criar administrador</span> conclui. Depois disso a tela deixa de existir e todos entram pelo login ou por convite.</p>
+  <div class="warn"><b>Atenção</b>Quem preencher essa tela primeiro vira o administrador. Faça isso logo após colocar o site no ar, antes de divulgar o endereço.</div>
+
+  <h2>2.2 Login, senha e convites</h2>
+  <figure class="half"><img src="img/login.jpg"><figcaption>Tela de login</figcaption></figure>
+  <h3>Login</h3>
+  <ul>
+    <li>Campos <span class="ui">E-mail</span> e <span class="ui">Senha</span>, botão <span class="ui">Entrar</span>.</li>
+    <li>A sessão dura 14 dias. Depois disso é preciso entrar de novo.</li>
+    <li>Proteção contra tentativas: depois de 8 erros em 15 minutos aparece <i>"Muitas tentativas. Aguarde 15 minutos."</i></li>
+  </ul>
+  <h3>Esqueci minha senha</h3>
+  <ol>
+    <li>No login, clique em <span class="ui">Esqueci minha senha</span>, informe o e-mail e clique em <span class="ui">Enviar link</span>.</li>
+    <li>Por segurança, a resposta é sempre a mesma: <i>"Se o e-mail estiver cadastrado, enviaremos as instruções de recuperação."</i></li>
+    <li>O link vale por 1 hora. Na tela <span class="ui">Nova senha</span>, preencha <span class="ui">Nova senha</span> e <span class="ui">Confirmar</span>.</li>
+    <li>Ao redefinir a senha, todas as sessões abertas dessa pessoa são encerradas.</li>
+  </ol>
+  <div class="note"><b>Sem e-mail configurado (SMTP)</b>O link de recuperação não é enviado: ele fica registrado no log do servidor. Nesse caso, o mais simples é o administrador gerar um novo convite para a pessoa.</div>
+  <h3>Convite</h3>
+  <ul>
+    <li>Coordenadores e administradores geram convites em <span class="ui">Configurações → Equipe e convites</span> (ver 9.1). O link vale por 7 dias.</li>
+    <li>Ao abrir o link, a pessoa vê a agência, o papel e o setor, preenche <span class="ui">Seu nome</span> e <span class="ui">Crie uma senha</span> e clica em <span class="ui">Aceitar convite</span>.</li>
+    <li>Se o e-mail já tiver conta: <i>"Faça login com ele e abra este link novamente."</i></li>
+    <li>Link vencido ou já usado: peça um novo convite ao coordenador.</li>
+  </ul>
+
+  <h2>2.3 Projetos</h2>
+  <figure><img src="img/projetos.jpg"><figcaption>Lista de projetos, agrupados por agência</figcaption></figure>
+  <p>Depois do login aparece a lista de projetos, agrupada por agência e com o seu papel. Cada cartão mostra o nome, o segmento, a data de lançamento (confirmada ou provisória) e, se for o caso, o selo "Dados demonstrativos". Clique no cartão para entrar no projeto.</p>
+  <h3>Novo projeto</h3>
+  <p>Só administradores e coordenadores criam projetos. O botão é <span class="ui">Novo projeto</span>.</p>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Marca / cliente *</td><td>Nome da marca (2 a 120 caracteres).</td></tr>
+    <tr><td>Segmento</td><td>Ramo de atuação, ex.: Decoração de interiores.</td></tr>
+    <tr><td>Data de lançamento (opcional)</td><td>Início da campanha. Usada no Dashboard, no calendário e como início padrão das simulações.</td></tr>
+    <tr><td>Verba inicial (R$)</td><td>Padrão R$ 10.000. É a base da sugestão de verba 30/60/10 e dos simuladores.</td></tr>
+    <tr><td>Ticket médio (R$)</td><td>Padrão R$ 350. Valor médio de uma compra, usado nos cálculos de receita.</td></tr>
+  </table>
+  <p>Tudo pode ser alterado depois em <span class="ui">Configurações</span>. Ao criar o projeto, o site já prepara um perfil de Instagram, canais de chat e uma proposta inicial de verba (não aprovada).</p>
+
+  <h2>2.4 Menu, barra superior e notificações</h2>
+  <figure><img src="img/dashboard.jpg"><figcaption>Estrutura geral: menu lateral à esquerda, barra superior e conteúdo</figcaption></figure>
+  <h3>Menu lateral</h3>
+  <table>
+    <tr><th>Grupo</th><th>Telas</th></tr>
+    <tr><td>Visão geral</td><td>Dashboard</td></tr>
+    <tr><td>Equipe</td><td>Chat, Central de Decisões, Tarefas, Calendário, Aprovações, Arquivos</td></tr>
+    <tr><td>Criação &amp; Campanha</td><td>Instagram Studio, Calendário editorial, Campanhas</td></tr>
+    <tr><td>Simulação</td><td>Métricas &amp; investimento, Growth Simulator, Planejamento de verba</td></tr>
+    <tr><td>Planejamento</td><td>Planejamento Digital, Pesquisa &amp; SWOT</td></tr>
+    <tr><td>Entrega</td><td>Documentos, Apresentação</td></tr>
+    <tr><td>Projeto</td><td>Configurações, Auditoria</td></tr>
+  </table>
+  <p>No topo do menu ficam a logo e o nome da marca. Clicar nele volta à lista de projetos. No celular, o menu abre pelo botão ☰.</p>
+  <h3>Barra superior</h3>
+  <ul>
+    <li><span class="ui">Modo apresentação</span>: abre os slides em tela cheia (ver 8.3).</li>
+    <li><b>Sino 🔔</b>: notificações, com contador de não lidas. Mostra as 20 mais recentes; clicar numa delas abre o item e a marca como lida. Use <span class="ui">Marcar todas como lidas</span> para limpar. A lista de eventos que geram notificação está em 10.1.</li>
+    <li>Avatar, nome e papel do usuário, e o botão <span class="ui">Sair</span>.</li>
+  </ul>
+</section>
+
+<!-- ============ 3. DASHBOARD ============ -->
+<section class="chapter" id="c3">
+  <div class="kicker">Capítulo 3</div>
+  <h1>Dashboard</h1>
+  <p class="lead">Resumo do projeto: prazo até o lançamento, andamento das tarefas, pendências e a projeção de referência.</p>
+  <h4>Selos no título</h4>
+  <ul>
+    <li><span class="ui">Nome oficial pendente: X × Y</span>: o briefing traz duas grafias e o nome oficial ainda não foi confirmado (ver Configurações).</li>
+    <li><span class="ui">Projeto com dados demonstrativos</span>: projeto de exemplo.</li>
+  </ul>
+  <h4>Filtros</h4>
+  <p><span class="ui">Setor</span>, <span class="ui">Responsável</span>, <span class="ui">Prazo de</span> … <span class="ui">até</span>, com os botões <span class="ui">Filtrar</span> e <span class="ui">Limpar</span>. Afetam os números de tarefas.</p>
+  <h4>Indicadores</h4>
+  <table>
+    <tr><th>Cartão</th><th>O que mostra</th></tr>
+    <tr><td>Lançamento</td><td>Dias até o lançamento (ou "Lançado"/"A definir"), com a data e se ela está confirmada ou é provisória.</td></tr>
+    <tr><td>Progresso das tarefas</td><td>% de tarefas concluídas ou aprovadas, com barra de progresso.</td></tr>
+    <tr><td>Atrasadas</td><td>Tarefas com prazo vencido.</td></tr>
+    <tr><td>Aprovações pendentes</td><td>Solicitações aguardando decisão, e quantas decisões estão abertas.</td></tr>
+  </table>
+  <h4>Gráficos e listas</h4>
+  <ul>
+    <li><b>Tarefas por etapa e setor</b>: quantidade por status, e concluídas × abertas por setor.</li>
+    <li><b>Minhas tarefas</b>: até 6 tarefas abertas atribuídas a você. Abaixo, a lista de <b>Atrasadas</b>.</li>
+    <li><b>Projeção de referência</b>: resultados hipotéticos do cenário de referência do Growth Simulator, que é o cenário aprovado ou, se não houver, o "Moderado". Mostra investimento, receita, compras e seguidores, com gráfico mensal. O botão <span class="ui">Abrir Growth Simulator</span> leva ao simulador.</li>
+    <li><b>Verba</b>: proposta atual e verba aprovada.</li>
+    <li><b>Decisões abertas</b>, <b>Aprovações</b>, <b>Mensagens recentes</b> (canais geral e de setores) e os 5 últimos <b>Documentos</b>.</li>
+  </ul>
+</section>
+
+<!-- ============ 4. EQUIPE ============ -->
+<section class="chapter" id="c4">
+  <div class="kicker">Capítulo 4</div>
+  <h1>Equipe</h1>
+
+  <h2>4.1 Chat</h2>
+  <figure><img src="img/chat.jpg"><figcaption>Chat da equipe com canais à esquerda</figcaption></figure>
+  <h4>Tipos de canal</h4>
+  <table>
+    <tr><th>Canal</th><th>Quem vê</th></tr>
+    <tr><td>Geral</td><td>Toda a equipe.</td></tr>
+    <tr><td>Setores</td><td>Toda a equipe. Um canal por setor: Planejamento, Atendimento, Criação, Redação.</td></tr>
+    <tr><td>Grupos</td><td>Só os participantes. Crie com <span class="ui">+</span> → <span class="ui">Novo grupo</span>, informando <span class="ui">Nome do grupo</span> e marcando os <span class="ui">Participantes</span>.</td></tr>
+    <tr><td>Mensagens privadas</td><td>Só as duas pessoas. Crie com <span class="ui">+</span> → <span class="ui">Nova conversa privada</span> e escolha <span class="ui">Com quem?</span>. Se a conversa já existir, ela é reaberta.</td></tr>
+  </table>
+  <h4>Escrever e enviar</h4>
+  <ul>
+    <li><kbd>Enter</kbd> envia a mensagem. <kbd>Shift</kbd>+<kbd>Enter</kbd> quebra a linha. Limite de 5.000 caracteres.</li>
+    <li><b>📎 Anexar:</b> até 10 arquivos por mensagem (Integrante ou acima). Imagens aparecem em miniatura; outros arquivos viram links de download.</li>
+    <li><span class="ui">Vincular…</span>: liga a mensagem a uma Tarefa, Documento ou Decisão. A mensagem mostra 🔗 com o link do item.</li>
+    <li><span class="ui">Responder</span>: cria uma resposta em sequência (thread), recuada abaixo da original.</li>
+  </ul>
+  <h4>Menções</h4>
+  <ul>
+    <li>Use <code>@nome</code> (primeiro nome) para chamar alguém, ou <code>@todos</code> / <code>@all</code> para chamar todos.</li>
+    <li>A pessoa mencionada recebe uma notificação. A mensagem que a menciona aparece com fundo âmbar.</li>
+    <li>Mensagens privadas também geram notificação ("Mensagem de …").</li>
+  </ul>
+  <h4>Busca</h4>
+  <p>O campo <span class="ui">Pesquisar mensagens…</span> procura em todos os canais que você pode ver (até 50 resultados). <span class="ui">Fechar busca</span> volta ao canal.</p>
+  <p>Mensagens novas aparecem sozinhas, sem recarregar a página. Cada canal mostra as 200 mensagens mais recentes.</p>
+
+  <h2>4.2 Central de Decisões</h2>
+  <figure><img src="img/decisoes.jpg"><figcaption>Central de Decisões</figcaption></figure>
+  <p>Registra propostas que precisam de decisão da equipe, com discussão e histórico.</p>
+  <div class="flow"><span>Proposta</span><i>→</i><span>Em discussão</span><i>→</i><span>Aprovada</span><i>ou</i><span>Rejeitada</span></div>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Título</td><td>Resumo da decisão.</td></tr>
+    <tr><td>Proposta *</td><td>Descrição do que se propõe.</td></tr>
+    <tr><td>Prazo para decidir</td><td>Data limite. Aparece no Calendário.</td></tr>
+    <tr><td>Responsáveis</td><td>Pessoas que devem opinar (até 20). Elas são notificadas.</td></tr>
+    <tr><td>Justificativa / observação</td><td>Motivo registrado ao mudar o status.</td></tr>
+  </table>
+  <ul>
+    <li><span class="ui">Nova proposta</span> (Integrante ou acima) cria a decisão.</li>
+    <li><span class="ui">Abrir discussão</span> (Integrante ou acima) passa de Proposta para Em discussão.</li>
+    <li><span class="ui">Aprovar</span> / <span class="ui">Rejeitar</span>: só coordenadores e administradores.</li>
+    <li>Decisões aprovadas ou rejeitadas ficam travadas. Para mudar algo, registre uma nova decisão.</li>
+    <li>O painel <span class="ui">Comentários</span> aceita @menções. O <span class="ui">Histórico</span> mostra quem fez o quê e quando.</li>
+  </ul>
+
+  <h2>4.3 Tarefas (Kanban)</h2>
+  <figure><img src="img/tarefas.jpg"><figcaption>Quadro de tarefas</figcaption></figure>
+  <div class="flow"><span>A fazer</span><i>→</i><span>Em andamento</span><i>→</i><span>Em revisão</span><i>→</i><span>Aguardando aprovação</span><i>→</i><span>Aprovado</span><i>→</i><span>Concluído</span></div>
+  <ul>
+    <li><b>Mover:</b> arraste o cartão entre colunas, ou use o seletor <span class="ui">Mover para</span> do cartão.</li>
+    <li><b>Filtros:</b> <span class="ui">Buscar tarefa…</span>, setor e responsável.</li>
+    <li><b>O cartão mostra:</b> prioridade, setor, o selo "Bloqueada" quando há dependência não concluída, prazo (em vermelho se atrasado), progresso do checklist ☑, número de anexos 📎 e o responsável.</li>
+  </ul>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Título *</td><td>2 a 200 caracteres.</td></tr>
+    <tr><td>Descrição</td><td>Detalhes da tarefa.</td></tr>
+    <tr><td>Status</td><td>Coluna atual.</td></tr>
+    <tr><td>Prioridade</td><td>Baixa, Média (padrão), Alta ou Urgente.</td></tr>
+    <tr><td>Responsável</td><td>Integrante da equipe. É notificado ao ser atribuído.</td></tr>
+    <tr><td>Setor</td><td>Planejamento, Atendimento, Criação ou Redação.</td></tr>
+    <tr><td>Prazo</td><td>Data de entrega. Aparece no Calendário.</td></tr>
+    <tr><td>Depende de</td><td>Outras tarefas que precisam terminar antes. Uma tarefa não pode ser aprovada nem concluída antes das dependências.</td></tr>
+    <tr><td>Checklist</td><td>Subitens (até 100): <span class="ui">Novo item</span> → <span class="ui">Adicionar</span>.</td></tr>
+  </table>
+  <h4>Regras automáticas</h4>
+  <ul>
+    <li>Só coordenadores e administradores colocam uma tarefa em <b>Aprovado</b>. Os demais movem para "Aguardando aprovação" ou usam <span class="ui">Solicitar aprovação</span>.</li>
+    <li>Ao entrar em "Aguardando aprovação", os aprovadores são notificados.</li>
+    <li>O responsável recebe alertas de "Prazo em até 48h" e "Tarefa atrasada".</li>
+    <li>Anexos e comentários ficam disponíveis depois de salvar a tarefa.</li>
+  </ul>
+
+  <h2>4.4 Calendário</h2>
+  <figure><img src="img/calendario.jpg"><figcaption>Calendário do projeto</figcaption></figure>
+  <ul>
+    <li>Reúne prazos de <b>tarefas</b>, horários de <b>publicações</b>, <b>marcos</b> do Growth Simulator e prazos de <b>decisões</b>.</li>
+    <li>Visões <span class="ui">Mês</span>, <span class="ui">Semana</span> e <span class="ui">Dia</span>. Navegue com ‹, <span class="ui">Hoje</span> e ›. Clicar no número de um dia abre a visão Dia.</li>
+    <li>Filtros por tipo de item e <span class="ui">Só minhas tarefas</span>.</li>
+    <li>Itens em vermelho estão atrasados. Os horários seguem o fuso de Brasília. Cada item abre a tela de origem.</li>
+  </ul>
+
+  <h2>4.5 Aprovações</h2>
+  <figure><img src="img/aprovacoes.jpg"><figcaption>Fila de aprovações</figcaption></figure>
+  <p>Concentra os pedidos de aprovação de tarefas, publicações, cenários, documentos, campanhas e verba. Em cada pendente, o coordenador pode escrever uma <span class="ui">Observação (opcional)</span> e escolher <span class="ui">Aprovar</span>, <span class="ui">Pedir ajustes</span> ou <span class="ui">Reprovar</span>. O <span class="ui">Histórico</span> lista as decisões já tomadas.</p>
+  <table class="free">
+    <tr><th>Item</th><th>Ao solicitar</th><th>Ao aprovar</th><th>Ao reprovar / pedir ajustes</th></tr>
+    <tr><td><b>Tarefa</b></td><td>Aguardando aprovação</td><td>Aprovado</td><td>Em andamento</td></tr>
+    <tr><td><b>Publicação</b></td><td>Revisão Atendimento</td><td>Aprovado</td><td>Redação</td></tr>
+    <tr><td><b>Campanha</b></td><td>Em revisão</td><td>Aprovada</td><td>Planejamento</td></tr>
+    <tr><td><b>Documento</b></td><td>Em revisão</td><td>Aprovado (versão travada)</td><td>Rascunho</td></tr>
+    <tr><td><b>Cenário</b></td><td>Em revisão</td><td>Aprovado</td><td>Rascunho</td></tr>
+    <tr><td><b>Verba</b></td><td>—</td><td>Aprovada (a anterior vira "Substituída")</td><td>—</td></tr>
+  </table>
+  <p>Não é possível abrir dois pedidos para o mesmo item. Quem solicitou é notificado da decisão.</p>
+
+  <h2>4.6 Arquivos</h2>
+  <figure><img src="img/arquivos.jpg"><figcaption>Biblioteca de arquivos</figcaption></figure>
+  <ul>
+    <li>Biblioteca protegida: os arquivos só abrem para membros do projeto que estejam logados.</li>
+    <li>Pastas: geral, briefing, referencias, midia, instagram, documentos e concorrentes. Outras telas criam pastas próprias (chat, marca, anexos de tarefas).</li>
+    <li><b>Enviar (Integrante ou acima):</b> escolha a pasta e clique em <span class="ui">Enviar arquivos</span>. Pode selecionar vários arquivos de uma vez.</li>
+    <li><b>Tipos aceitos:</b> PNG, JPG/JPEG, WEBP, GIF, PDF, MP4, TXT, CSV, DOCX, XLSX e PPTX. O site confere se o conteúdo do arquivo corresponde à extensão. SVG e arquivos disfarçados são recusados.</li>
+    <li><b>Tamanho máximo:</b> 15 MB por arquivo no padrão. Na hospedagem gratuita do Render o limite configurado é 8 MB.</li>
+    <li>Cada cartão mostra prévia, nome, pasta, tamanho, quem enviou, data e o código <span class="ui">id</span>, além dos botões <span class="ui">Baixar</span> e <span class="ui">Excluir</span>.</li>
+    <li>Excluir: quem enviou o arquivo, ou um coordenador.</li>
+  </ul>
+</section>
+
+<!-- ============ 5. CRIAÇÃO ============ -->
+<section class="chapter" id="c5">
+  <div class="kicker">Capítulo 5</div>
+  <h1>Criação &amp; Campanha</h1>
+
+  <h2>5.1 Instagram Studio</h2>
+  <p class="lead">Simulador do perfil da marca, sem ligação com conta real. Você envia a logo, monta o feed com imagens, carrosséis, Reels e stories, e vê como a campanha apareceria no app, inclusive como anúncio.</p>
+  <figure><img src="img/instagram.jpg"><figcaption>Instagram Studio: celular simulado à esquerda e painel de edição à direita</figcaption></figure>
+  <p>O painel da direita tem três abas: <span class="ui">Publicações</span>, <span class="ui">Perfil</span> e <span class="ui">Destaques</span>. Tudo o que você edita aparece na hora no celular à esquerda.</p>
+
+  <h3>Celular simulado</h3>
+  <p>Botões acima do aparelho: <span class="ui">Perfil</span>, <span class="ui">Feed</span>, <span class="ui">Reels</span>, <span class="ui">▶ Stories</span> e <span class="ui">App escuro</span>/<span class="ui">App claro</span>.</p>
+  <div class="two">
+    <figure><img src="img/instagram-feed.jpg"><figcaption>Tela Feed (Início)</figcaption></figure>
+    <figure><img src="img/instagram-stories.jpg"><figcaption>Stories em reprodução</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>Tela / ação</th><th>Como funciona</th></tr>
+    <tr><td>Perfil</td><td>Foto, contadores de posts, seguidores e seguindo, bio, destaques e grade. O botão "Seguir" muda para "Seguindo" apenas na simulação.</td></tr>
+    <tr><td>Reorganizar o feed</td><td>Arraste as miniaturas da grade. A nova ordem é salva para toda a equipe.</td></tr>
+    <tr><td>Abrir post</td><td>Toque na miniatura. Reels abrem na tela de Reels.</td></tr>
+    <tr><td>Curtir</td><td>Dois cliques na imagem, ou o coração. Curtir e salvar valem só na tela e não alteram os números hipotéticos.</td></tr>
+    <tr><td>Carrossel</td><td>Deslize ou use ‹ ›. Mostra contador n/N e pontos.</td></tr>
+    <tr><td>Anúncio</td><td>Mostra "Patrocinado" no lugar da localização e uma barra com o botão do anúncio.</td></tr>
+    <tr><td>Stories</td><td>5 segundos cada, com barras de progresso. Toque na lateral direita/esquerda para avançar/voltar, segure para pausar e use × para fechar. Tocar num destaque do perfil reproduz os stories dele.</td></tr>
+    <tr><td>Grade</td><td>Abas de grade, Reels e marcados. Itens que ainda não foram aprovados mostram a etiqueta "rascunho".</td></tr>
+  </table>
+
+  <h3>Aba Perfil</h3>
+  <figure><img src="img/instagram-perfil.jpg"><figcaption>Edição do perfil, com envio de logo</figcaption></figure>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Foto de perfil</td><td><span class="ui">Enviar foto ou logo</span> (PNG, JPEG, WEBP), <span class="ui">Remover</span>, ou <span class="ui">Ou escolha uma imagem já enviada…</span>.</td></tr>
+    <tr><td>Preencher círculo / Logo inteira</td><td>"Preencher círculo" corta a imagem para caber no círculo. "Logo inteira" mostra a marca completa sobre fundo branco, sem cortar.</td></tr>
+    <tr><td>Nome exibido</td><td>Nome em negrito no perfil (1 a 60 caracteres).</td></tr>
+    <tr><td>Nome de usuário</td><td>O @ do perfil: até 30 caracteres, com letras, números, ponto e _.</td></tr>
+    <tr><td>Categoria</td><td>Ex.: Decoração de interiores.</td></tr>
+    <tr><td>Link</td><td>Link da bio.</td></tr>
+    <tr><td>Bio</td><td>Até 150 caracteres. O contador fica no rótulo.</td></tr>
+    <tr><td>Seguidores exibidos (hipotéticos)</td><td><b>Do cenário de referência do Growth Simulator</b>, num marco (lançamento, 1, 3, 6 ou 12 meses), ou <b>Número informado</b> manualmente.</td></tr>
+    <tr><td>Seguindo</td><td>Número de contas seguidas.</td></tr>
+  </table>
+  <p>Botões: <span class="ui">Descartar</span> e <span class="ui">Salvar perfil</span>.</p>
+
+  <h3>Aba Destaques</h3>
+  <figure><img src="img/instagram-destaques.jpg"><figcaption>Destaques do perfil</figcaption></figure>
+  <ul>
+    <li>Destaques são os círculos abaixo da bio.</li>
+    <li>Para cada destaque você pode:
+      <ul>
+        <li>editar o título (salva ao sair do campo);</li>
+        <li><span class="ui">Enviar capa</span>/<span class="ui">Trocar capa</span>;</li>
+        <li>usar uma cor de capa;</li>
+        <li>subir na ordem com ↑;</li>
+        <li><span class="ui">Excluir</span> (os stories continuam salvos).</li>
+      </ul>
+    </li>
+    <li><span class="ui">+ Novo destaque</span> cria outro.</li>
+    <li>Para colocar um story num destaque, escolha o destaque ao editar o story.</li>
+  </ul>
+
+  <h3>Aba Publicações e editor</h3>
+  <p>Botões <span class="ui">+ Post</span>, <span class="ui">+ Carrossel</span>, <span class="ui">+ Reels</span> e <span class="ui">+ Story</span>. As listas mostram o Feed e os Stories, e clicar num item abre o editor.</p>
+  <figure><img src="img/instagram-editor.jpg"><figcaption>Editor de publicação, com prévia ao vivo no celular</figcaption></figure>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Formato</td><td>Post, Carrossel, Reels ou Story.</td></tr>
+    <tr><td>Título interno *</td><td>Nome de controle da equipe (não aparece no post). Até 120 caracteres.</td></tr>
+    <tr><td>Legenda</td><td>Até 2.200 caracteres, como no Instagram.</td></tr>
+    <tr><td>Hashtags</td><td>Até 30.</td></tr>
+    <tr><td>CTA</td><td>Chamada para ação, ex.: "Saiba mais".</td></tr>
+    <tr><td>Mídias (n/10)</td><td>Clique nas imagens/vídeos da biblioteca para adicionar ou remover, ou use <span class="ui">Enviar mídia</span>. A ordem de seleção é a ordem do carrossel. Máximo de 10.</td></tr>
+    <tr><td>Cor de capa (sem mídia)</td><td>Cor usada enquanto não houver imagem.</td></tr>
+    <tr><td>Data e hora (Brasília)</td><td>Quando a publicação iria ao ar. O padrão é o dia do lançamento, às 19h.</td></tr>
+    <tr><td>Status / etapa do fluxo</td><td>Ver fluxo abaixo.</td></tr>
+    <tr><td>Objetivo · Produto · Responsável · Campanha</td><td>Planejamento da peça e vínculo com uma campanha.</td></tr>
+    <tr><td>Etapa da jornada</td><td>Descoberta, Consideração, Decisão, Pós-compra ou Fidelização.</td></tr>
+    <tr><td>Destaque do perfil (story)</td><td>Destaque em que o story fica salvo.</td></tr>
+    <tr><td>Localização (demais formatos)</td><td>Ex.: São Paulo, Brasil. Aparece no cabeçalho do post.</td></tr>
+    <tr><td>Simular como anúncio</td><td>Mostra "Patrocinado" e o <span class="ui">Botão do anúncio</span>: Saiba mais, Comprar agora, Enviar mensagem, Ver coleção ou Fale conosco.</td></tr>
+    <tr><td>Curtidas / Comentários / Visualizações (hipotético)</td><td>Números informados pela equipe só para a simulação.</td></tr>
+    <tr><td>Nota da versão (opcional)</td><td>Explica a mudança, ex.: "ajuste de CTA pedido pelo Atendimento".</td></tr>
+  </table>
+  <h4>Fluxo de status da publicação</h4>
+  <div class="flow"><span>Rascunho</span><i>→</i><span>Redação</span><i>→</i><span>Criação</span><i>→</i><span>Revisão Planejamento</span><i>→</i><span>Revisão Atendimento</span><i>→</i><span>Aprovado</span><i>→</i><span>Agendado (simulado)</span></div>
+  <ul>
+    <li>Quando a peça entra em Redação, Criação, Revisão Planejamento ou Revisão Atendimento, os integrantes do setor correspondente são avisados.</li>
+    <li>"Aprovado" e "Agendado (simulado)" só podem ser definidos por coordenadores. Os demais usam <span class="ui">Solicitar aprovação</span>.</li>
+  </ul>
+  <h4>Versões</h4>
+  <p>Toda alteração de legenda, hashtags, CTA ou mídias cria uma nova versão automaticamente. Na aba <span class="ui">Versões</span>, escolha <span class="ui">Versão A</span> e <span class="ui">Versão B</span> para comparar: o texto adicionado aparece em verde, o removido em vermelho riscado, e as mídias das duas versões ficam lado a lado.</p>
+
+  <h2>5.2 Calendário editorial</h2>
+  <figure><img src="img/editorial-fluxo.jpg"><figcaption>Calendário editorial: visão "Fluxo de revisão"</figcaption></figure>
+  <p>Mostra as mesmas publicações do Instagram Studio, organizadas para o planejamento. <span class="ui">Nova publicação</span> abre o mesmo editor do Studio.</p>
+  <table>
+    <tr><th>Visão</th><th>Uso</th></tr>
+    <tr><td>Calendário</td><td>Publicações por mês, semana ou dia.</td></tr>
+    <tr><td>Fluxo de revisão</td><td>Colunas por status. O botão <span class="ui">Avançar → próxima etapa</span> passa a peça adiante. As etapas Aprovado e Agendado só ficam disponíveis para coordenadores.</td></tr>
+    <tr><td>Feed</td><td>O celular simulado. Clicar num post abre o editor.</td></tr>
+    <tr><td>Lista</td><td>Tabela com data/hora, formato, título, objetivo, jornada, produto, campanha, responsável e status.</td></tr>
+  </table>
+
+  <h2>5.3 Campanhas e testes A/B</h2>
+  <figure><img src="img/campanhas.jpg"><figcaption>Campanhas</figcaption></figure>
+  <p><b>Objetivos possíveis:</b> Reconhecimento, Engajamento, Tráfego, Contatos (leads), Conversão e Remarketing.</p>
+  <div class="flow"><span>Planejamento</span><i>→</i><span>Em revisão</span><i>→</i><span>Aprovada</span><i>→</i><span>Em veiculação (simulada)</span><i>→</i><span>Encerrada</span></div>
+  <h4>Aba Planejamento</h4>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Nome *</td><td>2 a 160 caracteres.</td></tr>
+    <tr><td>Objetivo</td><td>Um dos seis objetivos acima.</td></tr>
+    <tr><td>Público · Segmentação · Posicionamento · Mensagem principal</td><td>Estratégia da campanha.</td></tr>
+    <tr><td>Produtos · Canais · Formatos</td><td>O que é anunciado, onde e em que formato.</td></tr>
+    <tr><td>Orçamento planejado (R$)</td><td>Planejamento da campanha. Não substitui a verba aprovada em "Planejamento de verba".</td></tr>
+    <tr><td>Início · Fim</td><td>Período. O fim deve ser posterior ao início.</td></tr>
+    <tr><td>KPIs · Criativos</td><td>Indicadores de sucesso e descrição/links das peças.</td></tr>
+    <tr><td>Status · Responsáveis</td><td>"Aprovada" exige coordenador.</td></tr>
+  </table>
+  <p>Botões: <span class="ui">Salvar campanha</span>, <span class="ui">Solicitar aprovação</span> e <span class="ui">Excluir</span>. Ao excluir, as publicações vinculadas são apenas desvinculadas.</p>
+  <h4>Aba Testes A/B</h4>
+  <p>Compara duas hipóteses com a mesma verba e o mesmo CPM. O resultado mostra o que precisaria ser verdade para cada variante vencer, sem prever o vencedor real. Para concluir, valide com um teste real.</p>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Variável</td><td>O que muda entre A e B: Criativo, Público ou Mensagem.</td></tr>
+    <tr><td>Verba do teste · CPM · Ticket médio</td><td>Iguais para as duas variantes.</td></tr>
+    <tr><td>Hipótese</td><td>O que a equipe espera e por quê.</td></tr>
+    <tr><td>Variante A / B: CTR % e Conv. %</td><td>Taxa de clique e taxa de compra por clique de cada variante.</td></tr>
+  </table>
+  <p><b>Calculado automaticamente para cada variante:</b> impressões (verba ÷ CPM × 1000), cliques, CPC, compras, receita, CPA e ROAS. Também aparecem a diferença de cliques e de compras e a "hipótese mais favorável" (ou "empate"). O limite é de 20 testes por campanha.</p>
+</section>
+
+<!-- ============ 6. SIMULAÇÃO ============ -->
+<section class="chapter" id="c6">
+  <div class="kicker">Capítulo 6</div>
+  <h1>Simulação</h1>
+  <div class="disclaimer">SIMULAÇÃO ACADÊMICA — RESULTADOS HIPOTÉTICOS. NÃO REPRESENTAM DESEMPENHO GARANTIDO.</div>
+
+  <h2>6.1 Conceitos comuns aos simuladores</h2>
+  <h3>Origem de cada número</h3>
+  <p>Toda premissa tem uma etiqueta colorida. Clique nela para escolher a origem e, se quiser, escrever uma nota:</p>
+  <table>
+    <tr><th>Origem</th><th>Quando usar</th></tr>
+    <tr><td>Briefing confirmado</td><td>O cliente informou e confirmou.</td></tr>
+    <tr><td>Fonte externa documentada</td><td>Estudo, relatório ou benchmark publicado. É <b>obrigatório</b> informar a referência (autor, título, URL, data).</td></tr>
+    <tr><td>Hipótese da equipe</td><td>Estimativa da equipe ainda não validada. É a origem padrão.</td></tr>
+    <tr><td>Cálculo</td><td>Valor derivado de outros. Definido pelo sistema.</td></tr>
+    <tr><td>Dado real informado</td><td>Dado medido de verdade. Definido pelo sistema.</td></tr>
+  </table>
+  <p>Os campos numéricos aceitam vírgula como separador decimal. Os ícones <b>?</b> explicam os termos CTR, CPC, CPM, CPA, ROAS, Frequência, Alcance, Engajamento e Sessões.</p>
+
+  <h3>Barra de cenários</h3>
+  <p>Os dois simuladores usam a mesma barra para salvar e comparar conjuntos de premissas (cenários).</p>
+  <table>
+    <tr><th>Elemento</th><th>Função</th></tr>
+    <tr><td>Cenário salvo</td><td>Escolhe um cenário existente.</td></tr>
+    <tr><td>Carregar padrão</td><td>Conservador, Moderado ou Otimista (tabela abaixo).</td></tr>
+    <tr><td>Salvar alterações</td><td>Atualiza o cenário atual, que volta para "Rascunho".</td></tr>
+    <tr><td>Salvar como novo</td><td>Pede <span class="ui">Nome</span> e <span class="ui">Nível</span> (Conservador, Moderado, Otimista ou Personalizado). O autor, a data e a origem de cada número ficam registrados.</td></tr>
+    <tr><td>Duplicar</td><td>Cria uma cópia "(cópia)".</td></tr>
+    <tr><td>Comentários</td><td>Discussão sobre o cenário.</td></tr>
+    <tr><td>Solicitar aprovação</td><td>Envia para Aprovações (só para rascunhos).</td></tr>
+    <tr><td>Excluir</td><td>Autor ou coordenador.</td></tr>
+  </table>
+  <div class="note"><b>Cenário aprovado não muda</b>Para alterar um cenário aprovado, use <span class="ui">Duplicar</span> e edite a cópia.</div>
+  <h4>Valores padrão (todos são hipóteses da equipe)</h4>
+  <table class="free">
+    <tr><th>Premissa</th><th>Conservador</th><th>Moderado</th><th>Otimista</th></tr>
+    <tr><td>CPM (R$)</td><td>32</td><td>25</td><td>18</td></tr>
+    <tr><td>CTR</td><td>0,8%</td><td>1,2%</td><td>1,8%</td></tr>
+    <tr><td>Adição ao carrinho</td><td>4%</td><td>6%</td><td>8%</td></tr>
+    <tr><td>Início de checkout</td><td>40%</td><td>50%</td><td>60%</td></tr>
+    <tr><td>Conclusão de compra</td><td>45%</td><td>55%</td><td>65%</td></tr>
+    <tr><td>Ticket médio</td><td>ticket do projeto × 0,86</td><td>ticket do projeto</td><td>ticket do projeto × 1,14</td></tr>
+  </table>
+  <p>A verba padrão é a "Verba inicial" do projeto. O início padrão é a data de lançamento do projeto.</p>
+
+  <h2>6.2 Métricas &amp; investimento</h2>
+  <figure><img src="img/simulador.jpg"><figcaption>Simulador de métricas e investimento</figcaption></figure>
+  <p>Calcula o resultado de uma verba em um período, com divisão por campanha. CPM, CPC e CTR são sempre coerentes entre si: você escolhe a base de custo e o CTR, e a terceira métrica é derivada.</p>
+  <table>
+    <tr><th>Grupo / campo</th><th>Significado</th></tr>
+    <tr><td>Investimento</td><td><span class="ui">Total do período</span> ou <span class="ui">Diário</span>, valor em R$ e <span class="ui">Duração (dias)</span>. Mostra o equivalente diário ou total.</td></tr>
+    <tr><td>Base de custo</td><td>CPM (custo por mil impressões) ou CPC (custo por clique).</td></tr>
+    <tr><td>CTR</td><td>% de impressões que viram clique. Maior que 0% e até 100%; acima de 5% aparece um alerta. O CPC ou o CPM é derivado dele.</td></tr>
+    <tr><td>Frequência (opcional)</td><td>Média de vezes que cada pessoa vê o anúncio. Sem ela, o alcance não é calculado.</td></tr>
+    <tr><td>Chegada ao site (opcional)</td><td>% de cliques que viram sessão no site. Sem ela, o funil parte dos cliques.</td></tr>
+    <tr><td>Adição ao carrinho · Início de checkout · Conclusão de compra</td><td>Etapas do funil de compra.</td></tr>
+    <tr><td>Ticket médio (R$)</td><td>Valor médio por compra.</td></tr>
+    <tr><td>Distribuição por campanha</td><td>Linhas com <span class="ui">Campanha</span>, <span class="ui">% verba</span> e <span class="ui">CTR próprio</span> (em branco usa o CTR geral). A soma deve dar 100%. Padrão: 30% Reconhecimento/Engajamento, 60% Conversão/Remarketing, 10% Testes/Otimização.</td></tr>
+  </table>
+  <figure><img src="img/simulador-2.jpg"><figcaption>Resultados por campanha e funil</figcaption></figure>
+  <p><b>Resultados:</b> impressões, cliques, compras e receita, além da tabela por campanha (verba, impressões, alcance, cliques, CTR, CPM, CPC, sessões, carrinhos, checkouts, compras, receita, CPA, ROAS), com a linha de total recalculada a partir das somas. Também há o gráfico de funil, <span class="ui">Comparar cenários salvos</span>, o quadro de <span class="ui">Fórmulas</span> e <span class="ui">Exportar CSV</span>.</p>
+
+  <h2>6.3 Growth Simulator</h2>
+  <figure><img src="img/crescimento.jpg"><figcaption>Growth Simulator: premissas à esquerda e resultados à direita</figcaption></figure>
+  <p>Projeta dia a dia e agrega em semanas, meses, trimestres, semestres e anos. Recalcula na hora. Nada cresce proporcionalmente sem premissas declaradas.</p>
+  <h3>Premissas</h3>
+  <table>
+    <tr><th>Grupo</th><th>Campos</th></tr>
+    <tr><td>Período</td><td><span class="ui">Início</span> e <span class="ui">Horizonte</span>: Semanal, Mensal, Trimestral, Semestral, Anual (padrão) ou Personalizado (com data de fim).</td></tr>
+    <tr><td>Orçamento — inicial único</td><td><span class="ui">Valor único (R$)</span>, <span class="ui">Dias de veiculação</span> (padrão 90) e <span class="ui">Distribuição</span>: Uniforme, Concentrada no início ou Concentrada no fim. Atalhos de R$ 10/15/20 mil.</td></tr>
+    <tr><td>Orçamento — mensal recorrente</td><td><span class="ui">Valor por mês (R$)</span> e <span class="ui">Meses com investimento</span>.</td></tr>
+    <tr><td>Mídia paga</td><td>CPM inicial, CTR, Tamanho do público (opcional, padrão 400.000), Interações, Visitas ao perfil e Visualizações por impressão.</td></tr>
+    <tr><td>Funil do site</td><td>Sessões/clique, Adição ao carrinho, Início de checkout, Conclusão de compra e Ticket médio.</td></tr>
+    <tr><td>Instagram orgânico</td><td>Seguidores iniciais, posts e Reels por semana, alcance por post, multiplicador de Reels, visualizações, engajamento, visitas ao perfil, taxa de seguir, clique no link e perda mensal de seguidores.</td></tr>
+    <tr><td>Ajustes não lineares (opcionais)</td><td><b>Saturação</b>: o CTR cai com a frequência acumulada; exige tamanho do público; intensidade k = 0,15. <b>Aumento mensal de CPM</b>: padrão 1%. <b>Variação mensal da conversão</b>. <b>Sazonalidade</b>: multiplicadores de CPM e conversão de janeiro a dezembro, ex.: CPM × 1,3 em novembro (Black Friday).</td></tr>
+  </table>
+  <div class="tip"><b>Avisos automáticos</b>Sem nenhum ajuste não linear, a parte paga é linear: dobrar a verba dobra os resultados, e o site avisa isso. Sem tamanho de público, não há cálculo de alcance único. Se os dias de veiculação passarem do período, a verba se concentra dentro do período.</div>
+  <h3>Aba Projeção</h3>
+  <figure><img src="img/crescimento-2.jpg"><figcaption>Gráfico e tabela por período</figcaption></figure>
+  <ul>
+    <li>8 indicadores: Investimento total, Receita hipotética (ROAS), Compras hipotéticas (CPA), Seguidores, Alcance pago único, Visualizações, Interações e Visitas ao site.</li>
+    <li>Escolha a granularidade (semana a semana até ano a ano), o <span class="ui">Indicador</span> (20 opções, de Orçamento a ROAS) e o modo <span class="ui">Por período</span> ou <span class="ui">Acumulado</span>.</li>
+    <li>A tabela traz a variação absoluta e percentual em relação ao período anterior. Períodos incompletos aparecem como "(parcial)".</li>
+    <li><span class="ui">Exportar tabela (CSV)</span>.</li>
+    <li>CPA e ROAS são "combinados": incluem vendas orgânicas e não indicam causa.</li>
+  </ul>
+  <h3>Aba Cenários, orçamentos e estratégias</h3>
+  <figure><img src="img/crescimento-cenarios.jpg"><figcaption>Comparações</figcaption></figure>
+  <ul>
+    <li><b>Comparar cenários salvos:</b> marque os cenários e escolha o indicador acumulado (receita, compras, seguidores ou investimento).</li>
+    <li><b>Comparação de orçamentos:</b> único (10, 15 e 20 mil, mais um valor personalizado) ou mensal (1, 2 e 3 mil, mais personalizado). Mostra as compras a cada R$ 1.000 adicionais (retorno marginal).</li>
+    <li><b>Comparação de estratégias:</b> cada uma contra a base. As estratégias são Mais Reels, Frequência dobrada, Verba concentrada no início, Mesma verba diluída em 12 meses, Ênfase em reconhecimento e Ênfase em conversão.</li>
+  </ul>
+  <h3>Aba Linha do tempo</h3>
+  <figure><img src="img/crescimento-timeline.jpg"><figcaption>Linha do tempo com marcos</figcaption></figure>
+  <ul>
+    <li>Clique num marco para ver os valores acumulados até a data dele: investido, impressões, alcance, seguidores, compras e receita. Aparece também a prévia do perfil do Instagram naquele momento.</li>
+    <li><b>Marcos (ajustáveis):</b> <span class="ui">Título *</span>, <span class="ui">Data *</span>, <span class="ui">Tipo *</span> (Lançamento, Primeiro mês, Trimestre, Semestre, Ano ou Outro) e <span class="ui">Descrição</span>. Os marcos aparecem no Calendário.</li>
+  </ul>
+
+  <h2>6.4 Planejamento de verba</h2>
+  <figure><img src="img/verba.jpg"><figcaption>Planejamento de verba</figcaption></figure>
+  <p>Divide a verba em linhas (ex.: Reconhecimento 30%, Conversão 60%, Testes 10%). Ao criar o projeto, já é carregada uma <b>sugestão inicial 30/60/10, não aprovada</b>.</p>
+  <table>
+    <tr><th>Elemento</th><th>Função</th></tr>
+    <tr><td>Indicadores</td><td>Verba aprovada vigente, proposta selecionada, soma das linhas (confere ✓ ou não ✗) e número de propostas.</td></tr>
+    <tr><td>Versões</td><td>Lista das propostas: Proposta (não aprovada), Aprovada ou Substituída. <span class="ui">Nova proposta</span> cria outra.</td></tr>
+    <tr><td>Nome</td><td>Nome da proposta.</td></tr>
+    <tr><td>Total (R$)</td><td>Ao alterar, todas as linhas são escaladas mantendo os percentuais.</td></tr>
+    <tr><td>Linhas</td><td>Nome, valor e %. Digitar um valor muda só aquela linha. O controle <span class="ui">Redistribuir</span> ajusta a linha e compensa proporcionalmente nas outras, mantendo o total. Use <span class="ui">Adicionar linha</span> para incluir (de 1 a 20 linhas).</td></tr>
+    <tr><td>Observações</td><td>Justificativas.</td></tr>
+  </table>
+  <ul>
+    <li><b>Validação:</b> o total deve ser maior que zero, toda linha precisa de nome e a soma deve ser igual ao total.</li>
+    <li><b>Botões:</b> <span class="ui">Salvar</span>, <span class="ui">Salvar como nova versão</span>, <span class="ui">Solicitar aprovação</span>, <span class="ui">Aprovar esta verba</span> (coordenador) e <span class="ui">Excluir</span> (só propostas).</li>
+    <li>Só existe <b>uma verba aprovada</b> por vez. Aprovar outra transforma a anterior em "Substituída". Verba aprovada fica travada: para mudar, crie nova proposta.</li>
+    <li><b>Projeção com esta distribuição:</b> aplica as premissas de um cenário de métricas a cada linha e mostra verba × receita hipotética.</li>
+  </ul>
+</section>
+
+<!-- ============ 7. PLANEJAMENTO ============ -->
+<section class="chapter" id="c7">
+  <div class="kicker">Capítulo 7</div>
+  <h1>Planejamento</h1>
+
+  <h2>7.1 Planejamento Digital</h2>
+  <figure><img src="img/digital.jpg"><figcaption>Planejamento Digital: diagnóstico</figcaption></figure>
+  <p>Área de mensuração e dados: diagnóstico, plano de mensuração, Meta Pixel/API de Conversões, UTMs, KPIs reais e rotina. No topo ficam os contadores: diagnóstico OK, eventos validados, UTMs geradas e checklist de lançamento. As tabelas usam os botões <span class="ui">Adicionar</span>, <span class="ui">Editar</span> e <span class="ui">Excluir</span>.</p>
+  <table>
+    <tr><th>Aba</th><th>Campos e regras</th></tr>
+    <tr><td>Diagnóstico</td><td><span class="ui">Área</span> (Instagram, Site, E-commerce, Acessos, Ferramentas, Operação, Pendências), <span class="ui">Item *</span>, <span class="ui">Status</span> (Pendente, Em levantamento, OK / confirmado, Problema identificado) e <span class="ui">Notas</span>.</td></tr>
+    <tr><td>Plano de mensuração</td><td><span class="ui">Objetivo *</span>, <span class="ui">Evento / métrica *</span>, <span class="ui">Responsável</span>, <span class="ui">Status</span> (Planejado, Em implementação, Validado) e <span class="ui">Evidência</span>. "Validado" exige evidência.</td></tr>
+    <tr><td>Pixel / API de Conversões</td><td><span class="ui">Evento *</span>, <span class="ui">Gatilho</span>, <span class="ui">Parâmetros</span>, <span class="ui">Consentimento</span>, <span class="ui">Deduplicação</span>, <span class="ui">Plano de teste</span>, <span class="ui">Status</span> (Planejado, Implementado — não validado, Validado com evidência), <span class="ui">Evidência de validação</span> e <span class="ui">Ordem</span>. Inclui cartões de referência sobre LGPD, deduplicação e testes. O site não se conecta ao Meta.</td></tr>
+    <tr><td>Gerador de UTMs</td><td><span class="ui">URL de destino *</span>, <span class="ui">utm_source *</span> (ex.: instagram), <span class="ui">utm_medium *</span> (ex.: paid_social), <span class="ui">utm_campaign *</span>, <span class="ui">utm_content</span> (variação do criativo) e <span class="ui">utm_term</span> (público). Gera a URL codificada (minúsculas, sem acentos, espaços viram _). Botões <span class="ui">Copiar</span> e <span class="ui">Salvar no histórico</span>.</td></tr>
+    <tr><td>Dashboard de KPIs</td><td>Só dados <b>reais</b>, digitados manualmente: <span class="ui">Data *</span>, <span class="ui">Canal *</span>, Alcance, Impressões, Cliques, Investimento, Sessões, Conversões, Receita e <span class="ui">Fonte do dado *</span>. Calcula CTR, CPC, CPM, CPA e ROAS reais. O gráfico <b>Real × projetado</b> compara a receita real semanal com o cenário de referência.</td></tr>
+    <tr><td>Rotina e checklists</td><td><b>Checklist diário</b> (o botão <span class="ui">Novo dia</span> desmarca tudo) e <b>Checklist de lançamento</b>. Cada item marcado registra quem marcou e quando; <span class="ui">Gerenciar itens</span> edita a lista. O <b>Relatório semanal</b> tem <span class="ui">Semana (início) *</span>, Hipóteses, Problemas e Recomendações.</td></tr>
+  </table>
+  <div class="two">
+    <figure><img src="img/digital-utm.jpg"><figcaption>Gerador de UTMs</figcaption></figure>
+    <figure><img src="img/digital-kpis.jpg"><figcaption>Dashboard de KPIs (dados reais)</figcaption></figure>
+  </div>
+
+  <h2>7.2 Pesquisa &amp; SWOT</h2>
+  <figure><img src="img/pesquisa.jpg"><figcaption>Matriz SWOT</figcaption></figure>
+  <p>Registre só dados observados, com fonte e data, e separe evidências de hipóteses.</p>
+  <table>
+    <tr><th>Aba</th><th>Campos e funções</th></tr>
+    <tr><td>Matriz SWOT</td><td>Quadrantes Forças e Fraquezas (internos), Oportunidades e Ameaças (externos), cada um com <span class="ui">Adicionar</span>. Campos: <span class="ui">Quadrante</span>, <span class="ui">Descrição *</span>, <span class="ui">Base</span> (Evidência ou Hipótese), <span class="ui">Evidência</span> e <span class="ui">Fonte</span>. <span class="ui">Transformar em tarefa</span> cria uma tarefa de Planejamento a partir do item.</td></tr>
+    <tr><td>Concorrentes</td><td><span class="ui">Nome *</span>, Site, Redes sociais, Posicionamento, Produtos, Preços observados, Diferenciais, <span class="ui">Fontes (URL/print)</span>, Data da observação e Observações. <span class="ui">→ Tarefa</span> cria "Analisar concorrente". O cartão de anexos guarda prints e catálogos.</td></tr>
+    <tr><td>Referências</td><td><span class="ui">Referência (formato ABNT) *</span>, URL e Acesso em. Cadastre apenas obras realmente consultadas: elas formam a seção de referências dos documentos exportados.</td></tr>
+  </table>
+</section>
+
+<!-- ============ 8. ENTREGA ============ -->
+<section class="chapter" id="c8">
+  <div class="kicker">Capítulo 8</div>
+  <h1>Entrega</h1>
+
+  <h2>8.1 Documentos</h2>
+  <figure><img src="img/documentos.jpg"><figcaption>Lista de documentos</figcaption></figure>
+  <p>Edição colaborativa com versões, sugestões, aprovação e exportação DOCX/PDF no modelo ABNT. A lista mostra tipo, status (Rascunho, Em revisão, Aprovado), versão, última atualização e sugestões abertas.</p>
+  <h3>Novo documento</h3>
+  <p>Escolha o <span class="ui">Modelo</span> e, se quiser, um <span class="ui">Título (opcional)</span>, depois clique em <span class="ui">Gerar</span>. O conteúdo é montado com os dados reais do projeto. O que faltar aparece como "Pendente de preenchimento/validação"; nada é inventado.</p>
+  <p><b>Modelos:</b> Relatório final consolidado · Planejamento estratégico · Análise SWOT · Pesquisa de mercado e concorrentes · Público e jornada · Plano de mídia · Planejamento de campanha · Calendário editorial · Plano de mensuração e KPIs · Simulações financeiras e projeções · Ata de reunião · Relatório individual (pede o integrante) · Documento livre.</p>
+  <h3>Editor</h3>
+  <figure><img src="img/documento-lado.jpg"><figcaption>Editor no modo "Lado a lado": texto à esquerda, página formatada à direita</figcaption></figure>
+  <ul>
+    <li><b>Modos:</b> <span class="ui">Editar</span>, <span class="ui">Lado a lado</span> (padrão) e <span class="ui">Visualizar</span>.</li>
+    <li><b>Estado:</b> "Salvo · vN", "Alterações não salvas…", "Salvando…", "Conflito de edição". O cabeçalho mostra também quantas lacunas pendentes há e quem mais está com o documento aberto.</li>
+    <li><b>Salvamento automático</b> 2 segundos depois que você para de digitar. Salvamentos seguidos da mesma pessoa em até 10 minutos viram uma única versão.</li>
+  </ul>
+  <h4>Barra de formatação</h4>
+  <table>
+    <tr><th>Botão</th><th>Efeito</th></tr>
+    <tr><td>H1 · H2 · H3</td><td>Títulos de seção. Na exportação viram seções numeradas.</td></tr>
+    <tr><td>B · I</td><td>Negrito e itálico.</td></tr>
+    <tr><td>• Lista · 1. Lista</td><td>Listas com marcadores ou numeradas.</td></tr>
+    <tr><td>Tabela · Citação</td><td>Inserem tabela e citação.</td></tr>
+    <tr><td>Imagem…</td><td>Insere uma imagem do projeto (PNG, JPEG, GIF) como figura com legenda.</td></tr>
+    <tr><td>Gráfico…</td><td>Insere um gráfico vivo do projeto: receita, compras, seguidores ou investimento por mês; receita por semana, trimestre ou semestre; receita por cenário; distribuição da verba; receita por campanha.</td></tr>
+    <tr><td>Marcar pendente</td><td>Insere o aviso "Pendente de preenchimento/validação".</td></tr>
+    <tr><td>Quebra de página</td><td>Força uma nova página na exportação.</td></tr>
+    <tr><td>Sugerir alteração</td><td>Propõe mudança num trecho, sem editar diretamente.</td></tr>
+    <tr><td>Salvar versão</td><td>Salva manualmente.</td></tr>
+  </table>
+  <h4>Painel lateral</h4>
+  <table>
+    <tr><th>Aba</th><th>Função</th></tr>
+    <tr><td>Comentários</td><td>Discussão com @menções.</td></tr>
+    <tr><td>Sugestões</td><td>Mostra a diferença proposta, o autor e o status. <span class="ui">Aceitar</span> aplica o texto e credita a nova versão a quem sugeriu; <span class="ui">Rejeitar</span> descarta. Quem sugeriu é avisado.</td></tr>
+    <tr><td>Versões</td><td>Cada versão com autor, data e caracteres +/−. <span class="ui">Comparar</span> mostra as diferenças. <span class="ui">Restaurar</span> cria uma nova versão; nada é apagado.</td></tr>
+    <tr><td>Exportar</td><td>DOCX ou PDF da versão atual ou da versão aprovada. Se o nome oficial da marca não estiver confirmado, é preciso escolher a grafia e marcar o aviso de ciência.</td></tr>
+  </table>
+  <div class="note"><b>Formato ABNT da exportação</b>Capa, folha de rosto, sumário, seções numeradas, figuras e tabelas com fonte, referências (de Pesquisa → Referências) e o aviso de simulação no rodapé. Margens de 3/2 cm, Arial 12, espaçamento 1,5. Os dados de capa vêm de Configurações → Dados acadêmicos. As lacunas pendentes saem destacadas em amarelo no DOCX.</div>
+  <h4>Aprovação e outras ações</h4>
+  <ul>
+    <li><span class="ui">Solicitar aprovação final</span> (Integrante ou acima).</li>
+    <li><span class="ui">Aprovar versão final</span> (coordenador): trava o documento. <span class="ui">Reabrir para edição</span> volta ao rascunho, e a versão aprovada continua exportável.</li>
+    <li><span class="ui">Regenerar com dados atuais</span>: monta o texto de novo com os dados do projeto; o conteúdo anterior fica no histórico.</li>
+    <li><span class="ui">Excluir documento</span>: autor ou coordenador.</li>
+    <li>Visualizadores leem, comentam e usam <span class="ui">Sugerir alteração no trecho selecionado</span>, informando <span class="ui">Proposta</span> e <span class="ui">Justificativa</span>.</li>
+  </ul>
+  <h4>Conflito de edição</h4>
+  <p>Se duas pessoas salvam ao mesmo tempo, abre-se a janela <span class="ui">Conflito de edição</span> e nada se perde. Você pode ver as <span class="ui">Diferenças</span>, <span class="ui">Mesclar manualmente</span> (com o resultado editável), <span class="ui">Descartar a minha e usar a do servidor</span> ou <span class="ui">Gravar a minha por cima</span>.</p>
+
+  <h2>8.2 Relatório de contribuições</h2>
+  <figure><img src="img/contribuicoes.jpg"><figcaption>Relatório de contribuições</figcaption></figure>
+  <p>Contagem objetiva do que cada pessoa registrou na plataforma: versões de documentos, caracteres adicionados/removidos, sugestões (aceitas), comentários, mensagens, tarefas concluídas, publicações, decisões e ações. Não mede qualidade; serve de apoio ao relatório individual. Acesse pelo botão <span class="ui">Relatório de contribuições</span> em Documentos.</p>
+
+  <h2>8.3 Apresentação</h2>
+  <figure><img src="img/apresentacao.jpg"><figcaption>Página de apresentação com miniaturas</figcaption></figure>
+  <p>Os slides são montados automaticamente com os dados atuais. Botões: <span class="ui">Exportar PDF</span>, <span class="ui">Exportar PPTX editável</span> e <span class="ui">Iniciar apresentação</span>.</p>
+  <p><b>Ordem dos slides:</b></p>
+  <ol>
+    <li>Capa</li>
+    <li>Briefing</li>
+    <li>Objetivos e posicionamento</li>
+    <li>Análise SWOT</li>
+    <li>Público e jornada</li>
+    <li>Estratégia de campanhas</li>
+    <li>Instagram (perfil fictício)</li>
+    <li>Calendário editorial</li>
+    <li>Plano de mídia e orçamento (só se houver plano de verba; usa o aprovado ou mostra a proposta marcada como não aprovada)</li>
+    <li>Cenários comparados</li>
+    <li>Projeção mês a mês e Seguidores hipotéticos (só se houver cenário de referência)</li>
+    <li>KPIs e mensuração</li>
+    <li>Linha do tempo</li>
+    <li>Conclusões (vêm da seção "Considerações finais" ou "Conclusão" do documento final; se não existir, aparece como pendente)</li>
+  </ol>
+  <figure><img src="img/apresentar.jpg"><figcaption>Modo apresentação em tela cheia</figcaption></figure>
+  <h4>Atalhos do modo apresentação</h4>
+  <table>
+    <tr><th>Tecla</th><th>Ação</th></tr>
+    <tr><td><kbd>→</kbd> <kbd>PageDown</kbd> <kbd>Espaço</kbd></td><td>Próximo slide.</td></tr>
+    <tr><td><kbd>←</kbd> <kbd>PageUp</kbd></td><td>Slide anterior.</td></tr>
+    <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>Primeiro / último slide.</td></tr>
+    <tr><td><kbd>F</kbd></td><td>Liga/desliga a tela cheia.</td></tr>
+  </table>
+  <p>A barra inferior (<span class="ui">Sair</span>, ‹ n/N ›, <span class="ui">PDF</span>, <span class="ui">PPTX</span>, <span class="ui">Tela cheia (F)</span>) some depois de 2,5 segundos sem mexer o mouse. Controles administrativos ficam ocultos durante a apresentação.</p>
+</section>
+
+<!-- ============ 9. PROJETO ============ -->
+<section class="chapter" id="c9">
+  <div class="kicker">Capítulo 9</div>
+  <h1>Projeto</h1>
+
+  <h2>9.1 Configurações</h2>
+  <figure><img src="img/configuracoes.jpg"><figcaption>Configurações: Projeto e briefing</figcaption></figure>
+  <h3>Aba Projeto e briefing (Administrador)</h3>
+  <table>
+    <tr><th>Campo</th><th>Significado</th></tr>
+    <tr><td>Agência</td><td>Nome da agência.</td></tr>
+    <tr><td>Nome da marca / cliente · Grafia alternativa</td><td>Nome principal e outra grafia citada no briefing.</td></tr>
+    <tr><td>Nome oficial confirmado pelo cliente</td><td>Marcado: os documentos saem sem o alerta de nome pendente.</td></tr>
+    <tr><td>Segmento · Data de lançamento · Data confirmada</td><td>Dados básicos. "Confirmada" troca "(provisório)" por "(confirmado)".</td></tr>
+    <tr><td>Ticket médio usado nas simulações (R$)</td><td>Base dos três níveis: conservador × 0,86, moderado × 1, otimista × 1,14.</td></tr>
+    <tr><td>Verba inicial sugerida (R$)</td><td>Base da proposta 30/60/10 e dos padrões dos simuladores. Cenários já salvos não mudam.</td></tr>
+    <tr><td>Briefing</td><td>Cliente, Produtos, Diferenciais, Público prioritário, Ticket médio, Lançamento, Objetivos, Arquétipos, Tom de voz e Histórico de mídia. Esses textos alimentam documentos e slides.</td></tr>
+    <tr><td>Excluir projeto</td><td>Exige digitar o nome exato do projeto. Não pode ser desfeito.</td></tr>
+  </table>
+  <h3>Aba Identidade visual (Administrador)</h3>
+  <figure><img src="img/config-marca.jpg"><figcaption>Identidade visual com prévia</figcaption></figure>
+  <ul>
+    <li><span class="ui">Nome exibido</span> e <span class="ui">Logo</span> (escolha uma imagem do projeto ou <span class="ui">Enviar</span>).</li>
+    <li><b>Cores:</b> Carvão (texto/primária), Taupe, Areia, Marfim (fundo) e Destaque, além da opção "rosa modernidade".</li>
+    <li><b>Fontes:</b> de títulos (Cormorant Garamond, Playfair Display, Libre Baskerville, DM Serif Display) e de texto (Inter, Manrope, Work Sans, Lato).</li>
+    <li><span class="ui">Restaurar Quiet Luxury</span> volta ao padrão. <span class="ui">Salvar identidade</span> aplica as mudanças ao site e aos slides.</li>
+  </ul>
+  <h3>Aba Equipe e convites</h3>
+  <figure><img src="img/config-equipe.jpg"><figcaption>Equipe e convites</figcaption></figure>
+  <ul>
+    <li><b>Tabela da equipe:</b> nome, e-mail, papel, setor e responsabilidades. Só administradores editam (<span class="ui">Salvar</span>, <span class="ui">Remover</span>). Ninguém remove a si mesmo, e o último administrador não pode ser removido nem rebaixado.</li>
+    <li><b>Convidar integrante</b> (coordenador ou acima): <span class="ui">E-mail *</span>, <span class="ui">Nome</span>, <span class="ui">Papel</span>, <span class="ui">Setor</span> e <span class="ui">Responsabilidades</span>, depois <span class="ui">Gerar convite</span>.</li>
+    <li>Sem e-mail configurado, o site mostra o link do convite (válido por 7 dias) com <span class="ui">Copiar link</span>. Envie por WhatsApp.</li>
+    <li><b>Convites pendentes</b> podem ser cancelados com <span class="ui">Revogar</span>.</li>
+  </ul>
+  <h3>Aba Dados acadêmicos (Integrante ou acima)</h3>
+  <p>Faculdade/instituição, Curso, Disciplina, Professor(a), Semestre, Integrantes (um por linha), Título do trabalho, Subtítulo, Cidade e Ano. Esses dados vão para a capa e a folha de rosto ABNT. Campos vazios saem como "[Pendente de preenchimento/validação]".</p>
+  <h3>Aba Minha conta</h3>
+  <p><span class="ui">Alterar senha</span>: informe a <span class="ui">Senha atual</span> e a <span class="ui">Nova senha</span> (mín. 10, letras e números). O site guarda apenas nome, e-mail, papel e o conteúdo produzido pela equipe (LGPD).</p>
+
+  <h2>9.2 Auditoria</h2>
+  <figure><img src="img/auditoria.jpg"><figcaption>Registro de auditoria</figcaption></figure>
+  <p>Visível só para coordenadores e administradores. Registra data, autor, ação (criou, editou, excluiu, moveu, comentou, aprovou, exportou…), item afetado e detalhes. Pode ser filtrada por tipo de item e mostra 100 linhas por página.</p>
+</section>
+
+<!-- ============ 10. COMPORTAMENTOS GERAIS ============ -->
+<section class="chapter" id="c10">
+  <div class="kicker">Capítulo 10</div>
+  <h1>Comportamentos gerais</h1>
+  <h2>10.1 Notificações (sino)</h2>
+  <table>
+    <tr><th>Evento</th><th>Quem recebe</th></tr>
+    <tr><td>Tarefa atribuída</td><td>O novo responsável.</td></tr>
+    <tr><td>Tarefa aguardando aprovação</td><td>Coordenadores e administradores.</td></tr>
+    <tr><td>Prazo em até 48h / Tarefa atrasada</td><td>O responsável pela tarefa.</td></tr>
+    <tr><td>Menção (@nome) no chat ou em comentários</td><td>A pessoa mencionada.</td></tr>
+    <tr><td>Mensagem privada</td><td>O destinatário.</td></tr>
+    <tr><td>Nova decisão / mudança de status</td><td>Os responsáveis e o criador da decisão.</td></tr>
+    <tr><td>Solicitação de aprovação</td><td>Coordenadores e administradores.</td></tr>
+    <tr><td>Item aprovado / reprovado / com ajustes</td><td>Quem solicitou.</td></tr>
+    <tr><td>Publicação muda de etapa</td><td>O setor da nova etapa.</td></tr>
+    <tr><td>Sugestão em documento / sugestão resolvida</td><td>Quem criou e quem editou por último / quem sugeriu.</td></tr>
+  </table>
+  <p>Quem causou o evento não recebe a própria notificação.</p>
+  <h2>10.2 Atualização em tempo real</h2>
+  <ul>
+    <li>Quando alguém muda algo (chat, tarefas, decisões, publicações, notificações, documentos), as páginas abertas pelos outros se atualizam sozinhas em menos de 1 segundo.</li>
+    <li>Nos documentos aparecem os avatares de quem está com o documento aberto.</li>
+  </ul>
+  <h2>10.3 Padrões da interface</h2>
+  <ul>
+    <li>Campos com <b>*</b> são obrigatórios.</li>
+    <li>As mensagens de sucesso somem em 3 segundos e as de erro em 6.</li>
+    <li>Toda exclusão pede confirmação: "Esta ação não pode ser desfeita".</li>
+    <li>Janelas fecham com <kbd>Esc</kbd> ou ✕.</li>
+    <li>Quem não tem permissão vê os formulários desabilitados.</li>
+    <li>Datas no formato brasileiro e horários no fuso de Brasília.</li>
+  </ul>
+</section>
+
+<!-- ============ 11. ROTEIRO ============ -->
+<section class="chapter" id="c11">
+  <div class="kicker">Capítulo 11</div>
+  <h1>Roteiro de trabalho sugerido</h1>
+  <p class="lead">Uma ordem prática para levar uma campanha do briefing à apresentação final.</p>
+  <ol class="steps">
+    <li><b>Configurar o projeto</b>: em <span class="ui">Configurações</span>, preencha o briefing, a data de lançamento, o ticket médio, a verba inicial e os dados acadêmicos. Ajuste a identidade visual.</li>
+    <li><b>Montar a equipe</b>: convide cada pessoa com o papel e o setor certos.</li>
+    <li><b>Pesquisar</b>: registre concorrentes, a matriz SWOT (com evidência ou hipótese) e as referências consultadas.</li>
+    <li><b>Organizar o trabalho</b>: crie tarefas com responsáveis, prazos e dependências. Use o chat por setor e registre as decisões na Central de Decisões.</li>
+    <li><b>Planejar campanhas</b>: defina objetivo, público, mensagem e orçamento planejado de cada campanha, e crie testes A/B de hipóteses.</li>
+    <li><b>Simular</b>: no Growth Simulator e em Métricas &amp; investimento, ajuste as premissas, declare a origem de cada número, salve cenários (Conservador, Moderado, Otimista) e peça aprovação do cenário de referência.</li>
+    <li><b>Distribuir a verba</b>: revise a proposta 30/60/10, crie versões e aprove a verba final.</li>
+    <li><b>Criar o Instagram</b>: envie a logo, configure o perfil e os destaques, e produza posts, carrosséis, Reels e stories, passando cada peça pelo fluxo Redação → Criação → Revisões → Aprovado.</li>
+    <li><b>Mensuração</b>: preencha o diagnóstico, o plano de mensuração, os eventos de Pixel e as UTMs. Depois do lançamento, registre os KPIs reais.</li>
+    <li><b>Documentar</b>: gere o Relatório final consolidado e os demais documentos, elimine as lacunas pendentes, revise com sugestões e aprove a versão final.</li>
+    <li><b>Apresentar</b>: confira os slides, exporte em PDF/PPTX e apresente no modo tela cheia.</li>
+  </ol>
+</section>
+
+<!-- ============ 12. FAQ ============ -->
+<section class="chapter" id="c12">
+  <div class="kicker">Capítulo 12</div>
+  <h1>Perguntas frequentes e solução de problemas</h1>
+  <table>
+    <tr><th>Situação</th><th>O que fazer</th></tr>
+    <tr><td>O site demora 30–60 s para abrir</td><td>No plano gratuito do Render, o site "dorme" depois de uns 15 minutos sem acesso. O primeiro acesso o acorda. Antes de apresentar, abra o site com um minuto de antecedência.</td></tr>
+    <tr><td>Erro 502 (Gateway inválido)</td><td>O servidor está reiniciando ou acordando. Espere 30 segundos e recarregue. Se continuar, veja os Logs no painel do Render.</td></tr>
+    <tr><td>Não consigo aprovar / mover para Aprovado</td><td>Só coordenadores e administradores aprovam. Use <span class="ui">Solicitar aprovação</span>.</td></tr>
+    <tr><td>"Dependências pendentes"</td><td>A tarefa depende de outras que ainda não foram concluídas. Conclua-as primeiro.</td></tr>
+    <tr><td>Não consigo excluir um item</td><td>Só o autor ou coordenadores podem excluir. Itens de listas simples só coordenadores excluem.</td></tr>
+    <tr><td>Não consigo alterar um cenário, verba ou documento</td><td>Itens aprovados ficam travados. Duplique o cenário, crie uma nova proposta de verba ou peça para reabrir o documento.</td></tr>
+    <tr><td>Arquivo recusado no envio</td><td>Confira o tipo (imagens, PDF, MP4, DOCX, XLSX, PPTX, TXT, CSV) e o tamanho máximo. SVG não é aceito.</td></tr>
+    <tr><td>O documento exportado tem aviso de nome pendente</td><td>Em Configurações, marque "Nome oficial confirmado pelo cliente".</td></tr>
+    <tr><td>A capa do documento mostra "[Pendente…]"</td><td>Preencha <span class="ui">Configurações → Dados acadêmicos</span>.</td></tr>
+    <tr><td>Esqueci a senha e não chega e-mail</td><td>Sem SMTP configurado, peça ao administrador um novo convite ou a recuperação pelo log do servidor.</td></tr>
+    <tr><td>"Fonte externa documentada" não salva</td><td>Essa origem exige referência completa (autor, título, URL, data).</td></tr>
+    <tr><td>Os números do Instagram mudaram sozinhos</td><td>Se os seguidores vêm "do cenário de referência", eles acompanham o cenário aprovado ou o Moderado. Para um valor fixo, use "Número informado".</td></tr>
+  </table>
+  <div class="disclaimer" style="margin-top:8mm">SIMULAÇÃO ACADÊMICA — RESULTADOS HIPOTÉTICOS. NÃO REPRESENTAM DESEMPENHO GARANTIDO.</div>
+</section>
+
+</body>
+</html>
