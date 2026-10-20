@@ -167,6 +167,10 @@ model Project {
   segment               String?
   launchDate            DateTime?
   launchDateConfirmed   Boolean   @default(false)
+  /// ticket médio usado como padrão nas simulações (R$)
+  ticketValue           Float     @default(350)
+  /// verba inicial sugerida (R$) — base da proposta 30/60/10 e dos simuladores
+  initialBudget         Float     @default(10000)
   /// briefing estruturado (produtos, diferenciais, público, objetivos, arquétipos, tom...)
   briefing              Json      @default("{}")
   /// identidade visual configurável (cores, fontes, logo, opção "rosa modernidade")
@@ -282,6 +286,8 @@ model FileAsset {
   mime       String
   size       Int
   storageKey String   @unique
+  /// conteúdo do arquivo quando STORAGE_DRIVER=db (hospedagens sem disco persistente)
+  data       Bytes?
   folder     String?
   createdAt  DateTime @default(now())
 }
@@ -362,6 +368,11 @@ model InstagramProfile {
   bio                   String?
   link                  String?
   avatarFileId          String?
+  /// cover = preencher o círculo; contain = logo inteira sobre fundo branco
+  avatarFit             String  @default("cover")
+  /// manual = número informado; scenario = seguidores do cenário de referência no marco escolhido
+  followersMode         String  @default("manual")
+  followersMonths       Int     @default(1)
   hypotheticalFollowers Int     @default(0)
   hypotheticalFollowing Int     @default(0)
 }
@@ -387,6 +398,10 @@ model Publication {
   cta                  String?
   mediaFileIds         String[]        @default([])
   coverColor           String?
+  location             String?
+  isAd                 Boolean         @default(false)
+  adCta                String?
+  highlightId          String?
   scheduledAt          DateTime?
   objective            String?
   journeyStage         String?

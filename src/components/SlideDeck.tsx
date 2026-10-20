@@ -1,5 +1,6 @@
 "use client";
 
+import { APP_NAME } from "@/lib/app";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { Chart } from "./charts";
 import { PhoneProfile } from "./instagram/PhoneProfile";
@@ -15,7 +16,7 @@ export function SlideView({ s, creative }: { s: Slide; creative: { profile: IgPr
   if (s.kind === "cover")
     return (
       <div className="flex h-full flex-col justify-center bg-carvao px-[8%] text-marfim">
-        <p className="text-sm uppercase tracking-[0.4em] text-taupe">Campaign Lab</p>
+        <p className="text-sm uppercase tracking-[0.4em] text-taupe">{APP_NAME}</p>
         <h1 className="mt-4 font-serif text-5xl sm:text-7xl">{s.title}</h1>
         <p className="mt-3 font-serif text-2xl text-taupe sm:text-3xl">{s.subtitle}</p>
         <div className="mt-10 space-y-1 text-sm opacity-80">{s.lines.map((l) => <p key={l}>{l}</p>)}</div>

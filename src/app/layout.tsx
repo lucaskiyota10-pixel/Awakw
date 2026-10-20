@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Awake Campaign Lab",
+  title: "Campaign Forge",
   description: "Plataforma colaborativa de planejamento publicitário, simulação e documentação acadêmica.",
 };
 

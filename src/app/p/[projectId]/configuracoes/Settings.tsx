@@ -50,7 +50,7 @@ export const ACADEMIC_FIELDS: [string, string][] = [
 type Tab = "projeto" | "marca" | "equipe" | "academico" | "conta";
 
 interface Props {
-  project: { name: string; alternateName: string | null; officialNameConfirmed: boolean; segment: string | null; launchDate: string; launchDateConfirmed: boolean; briefing: Record<string, string>; academic: Record<string, string> };
+  project: { name: string; alternateName: string | null; officialNameConfirmed: boolean; segment: string | null; launchDate: string; launchDateConfirmed: boolean; ticketValue: number; initialBudget: number; agencyName: string; briefing: Record<string, string>; academic: Record<string, string> };
   brand: Brand;
   members: { id: string; name: string; email: string; role: RoleName; sector: string | null; responsibilities: string | null }[];
   invites: { id: string; email: string; role: string; sector: string | null; expiresAt: string }[];
@@ -83,11 +83,14 @@ function ProjectTab({ project, readOnly }: Props & { readOnly: boolean }) {
     <div className="space-y-6">
       <form className="card space-y-4" onSubmit={(e) => { e.preventDefault(); exec(() => updateProjectAction(p.projectId, { ...v, launchDate: v.launchDate || null }), { success: "Projeto atualizado." }); }}>
         <fieldset disabled={readOnly} className="grid gap-4 sm:grid-cols-2">
-          <Field label="Nome do projeto/cliente"><input className="input" value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} /></Field>
+          <Field label="Agência"><input className="input" value={v.agencyName} onChange={(e) => setV({ ...v, agencyName: e.target.value })} /></Field>
+          <Field label="Nome da marca / cliente"><input className="input" value={v.name} onChange={(e) => setV({ ...v, name: e.target.value })} /></Field>
           <Field label="Grafia alternativa (briefing)"><input className="input" value={v.alternateName ?? ""} onChange={(e) => setV({ ...v, alternateName: e.target.value })} /></Field>
           <label className="flex items-center gap-2 text-sm sm:col-span-2"><input type="checkbox" checked={v.officialNameConfirmed} onChange={(e) => setV({ ...v, officialNameConfirmed: e.target.checked })} /> Nome oficial confirmado pelo cliente (libera emissão de documentos sem alerta)</label>
           <Field label="Segmento"><input className="input" value={v.segment ?? ""} onChange={(e) => setV({ ...v, segment: e.target.value })} /></Field>
           <Field label="Data de lançamento"><input type="date" className="input" value={v.launchDate} onChange={(e) => setV({ ...v, launchDate: e.target.value })} /></Field>
+          <Field label="Ticket médio usado nas simulações (R$)" hint="Base dos cenários padrão (conservador × 0,86, otimista × 1,14)."><input className="input" type="number" min={1} step="0.01" value={v.ticketValue} onChange={(e) => setV({ ...v, ticketValue: Number(e.target.value) })} /></Field>
+          <Field label="Verba inicial sugerida (R$)" hint="Base da proposta 30/60/10 e dos simuladores. Cenários já salvos não mudam."><input className="input" type="number" min={1} step="1" value={v.initialBudget} onChange={(e) => setV({ ...v, initialBudget: Number(e.target.value) })} /></Field>
           <label className="flex items-center gap-2 text-sm sm:col-span-2"><input type="checkbox" checked={v.launchDateConfirmed} onChange={(e) => setV({ ...v, launchDateConfirmed: e.target.checked })} /> Data de lançamento confirmada</label>
           {BRIEFING_FIELDS.map(([k, l]) => (
             <div key={k} className="sm:col-span-2"><Field label={l}><textarea className="input min-h-[60px]" value={v.briefing[k] ?? ""} onChange={(e) => setV({ ...v, briefing: { ...v.briefing, [k]: e.target.value } })} /></Field></div>

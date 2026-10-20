@@ -18,7 +18,7 @@ export default async function ProjectsPage() {
       <main className="mx-auto max-w-5xl p-6 sm:p-10">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.3em] text-taupe">Awake Campaign Lab</p>
+            <p className="text-[11px] uppercase tracking-[0.3em] text-taupe">Campaign Forge</p>
             <h1 className="text-4xl">Projetos</h1>
             <p className="muted text-sm">Olá, {user.name}. Cada agência tem seus dados isolados.</p>
           </div>

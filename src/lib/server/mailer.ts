@@ -10,8 +10,9 @@ export async function sendMail(to: string, subject: string, text: string): Promi
     secure: Number(process.env.SMTP_PORT) === 465,
     auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined,
   });
-  await transport.sendMail({ from: process.env.SMTP_FROM, to, subject, text });
+  await transport.sendMail({ from: process.env.SMTP_FROM || process.env.SMTP_USER, to, subject, text });
   return { sent: true };
 }
 
-export const appUrl = () => (process.env.APP_URL || "http://localhost:3000").replace(/\/$/, "");
+// RENDER_EXTERNAL_URL é definida automaticamente pelo Render.
+export const appUrl = () => (process.env.APP_URL || process.env.RENDER_EXTERNAL_URL || "http://localhost:3000").replace(/\/$/, "");

@@ -16,7 +16,7 @@ export function MetricsSim({ scenarios, initialId }: { scenarios: ScenarioLite[]
   const p = useProject();
   const init = scenarios.find((s) => s.id === initialId);
   const [currentId, setCurrentId] = useState<string | null>(init?.id ?? null);
-  const [v, setV] = useState<MetricsInput>(() => (init ? readMetrics(init.premises).values : defaultMetrics("MODERATE")));
+  const [v, setV] = useState<MetricsInput>(() => (init ? readMetrics(init.premises).values : defaultMetrics("MODERATE", p.defaults)));
   const [sources, setSources] = useState<SourceMap>(() => (init ? readMetrics(init.premises).sources : defaultMetricsSources()));
   const [compareIds, setCompareIds] = useState<string[]>(() => scenarios.slice(0, 3).map((s) => s.id));
   const out = useMemo(() => simulateMetrics(v), [v]);
@@ -52,7 +52,7 @@ export function MetricsSim({ scenarios, initialId }: { scenarios: ScenarioLite[]
             setSources(r.sources);
           }
         }}
-        onPreset={(l) => { setCurrentId(null); setV(defaultMetrics(l)); setSources(defaultMetricsSources()); }}
+        onPreset={(l) => { setCurrentId(null); setV(defaultMetrics(l, p.defaults)); setSources(defaultMetricsSources()); }}
         extra={out.ok && out.total && (
           <button className="btn-secondary btn-sm" onClick={() => downloadCsv("simulacao-metricas.csv", [["SIMULAÇÃO ACADÊMICA — RESULTADOS HIPOTÉTICOS"], ["Campanha", "Investimento", "Impressões", "Alcance", "Cliques", "CTR", "CPM", "CPC", "Sessões", "Carrinhos", "Checkouts", "Compras", "Receita", "CPA", "ROAS"], ...out.campaigns.map(rowsFor), rowsFor(out.total!)])}>Exportar CSV</button>
         )}

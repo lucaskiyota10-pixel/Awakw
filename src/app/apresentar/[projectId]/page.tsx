@@ -4,7 +4,7 @@ import { loadCreative } from "@/lib/server/creative-data";
 import { brandStyle, fontHref } from "@/lib/brand";
 import { SlideDeck } from "@/components/SlideDeck";
 
-export const metadata = { title: "Apresentação — Awake Campaign Lab" };
+export const metadata = { title: "Apresentação — Campaign Forge" };
 
 export default async function PresentPage({ params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await params;

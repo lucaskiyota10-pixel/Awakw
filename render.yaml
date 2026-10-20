@@ -1,0 +1,38 @@
+# Blueprint do Render (https://render.com/docs/blueprint-spec).
+# Cria um Web Service gratuito. O banco PostgreSQL fica no Neon (gratuito) —
+# veja DEPLOY.md. Nenhuma credencial fica neste arquivo: os valores marcados
+# com `sync: false` são pedidos no painel do Render na criação.
+services:
+  - type: web
+    name: campaign-forge
+    runtime: node
+    plan: free
+    region: virginia
+    buildCommand: npm ci --include=dev && npx prisma migrate deploy && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        sync: false
+      # Sem disco persistente no plano gratuito: arquivos enviados ficam no PostgreSQL.
+      - key: STORAGE_DRIVER
+        value: db
+      - key: UPLOAD_MAX_MB
+        value: "8"
+      # Opcional: deixe em branco para usar o endereço *.onrender.com automaticamente.
+      - key: APP_URL
+        sync: false
+      # Opcional: e-mail para convites e recuperação de senha.
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false

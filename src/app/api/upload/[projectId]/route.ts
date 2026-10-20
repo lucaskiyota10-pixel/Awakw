@@ -28,9 +28,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ project
     const name = safeFileName(f.name);
     const err = validateUpload(name, f.type, buf);
     if (err) return Response.json({ error: `${f.name}: ${err}` }, { status: 400 });
-    const key = await storeFile(projectId, buf, path.extname(name).toLowerCase());
+    const stored = await storeFile(projectId, buf, path.extname(name).toLowerCase());
     const rec = await prisma.fileAsset.create({
-      data: { projectId, uploaderId: ctx.user.id, name, mime: f.type, size: buf.length, storageKey: key, folder },
+      data: { projectId, uploaderId: ctx.user.id, name, mime: f.type, size: buf.length, storageKey: stored.key, data: stored.data, folder },
     });
     await audit({ projectId, userId: ctx.user.id, action: "upload", entity: "file", entityId: rec.id, data: { name, size: buf.length } });
     out.push({ id: rec.id, name: rec.name, mime: rec.mime, size: rec.size });

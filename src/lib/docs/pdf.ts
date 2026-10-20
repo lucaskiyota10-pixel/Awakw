@@ -180,7 +180,7 @@ function drawBarChart(w: Writer, labels: string[], values: number[], format: "br
 export async function renderPdf(markdown: string, meta: DocMeta, assets: ResolvedAssets): Promise<Buffer> {
   const pdf = await PDFDocument.create();
   pdf.setTitle(meta.title);
-  pdf.setCreator("Awake Campaign Lab");
+  pdf.setCreator("Campaign Forge");
   const f: Fonts = {
     r: await pdf.embedFont(StandardFonts.Helvetica),
     b: await pdf.embedFont(StandardFonts.HelveticaBold),

@@ -6,8 +6,9 @@ import { Settings } from "./Settings";
 export default async function SettingsPage({ params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await params;
   const ctx = await pageContext(projectId);
-  const [project, members, invites, images] = await Promise.all([
+  const [project, agency, members, invites, images] = await Promise.all([
     prisma.project.findUniqueOrThrow({ where: { id: projectId } }),
+    prisma.agency.findUniqueOrThrow({ where: { id: ctx.agencyId }, select: { name: true } }),
     projectMembers(projectId),
     prisma.invite.findMany({ where: { agencyId: ctx.agencyId, acceptedAt: null }, orderBy: { createdAt: "desc" } }),
     prisma.fileAsset.findMany({ where: { projectId, mime: { startsWith: "image/" } }, select: { id: true, name: true }, orderBy: { createdAt: "desc" } }),
@@ -21,6 +22,9 @@ export default async function SettingsPage({ params }: { params: Promise<{ proje
         segment: project.segment,
         launchDate: project.launchDate?.toISOString().slice(0, 10) ?? "",
         launchDateConfirmed: project.launchDateConfirmed,
+        ticketValue: project.ticketValue,
+        initialBudget: project.initialBudget,
+        agencyName: agency.name,
         briefing: (project.briefing ?? {}) as Record<string, string>,
         academic: (project.academic ?? {}) as Record<string, string>,
       }}

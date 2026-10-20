@@ -12,7 +12,7 @@ import { bootstrapProject, DEFAULT_BRAND } from "@/lib/server/bootstrap";
 import { appUrl, sendMail } from "@/lib/server/mailer";
 import { canAssignRole, type RoleName } from "@/lib/permissions";
 
-export async function createProjectAction(input: { agencyId: string; name: string; segment?: string; launchDate?: string }) {
+export async function createProjectAction(input: { agencyId: string; name: string; segment?: string; launchDate?: string; initialBudget?: number; ticketValue?: number }) {
   return run(async () => {
     const user = await requireUser();
     const m = await prisma.membership.findUnique({ where: { userId_agencyId: { userId: user.id, agencyId: input.agencyId } } });
@@ -26,10 +26,12 @@ export async function createProjectAction(input: { agencyId: string; name: strin
           name,
           segment: input.segment?.trim() || null,
           launchDate: launch ? new Date(launch) : null,
+          initialBudget: input.initialBudget && input.initialBudget > 0 ? input.initialBudget : 10000,
+          ticketValue: input.ticketValue && input.ticketValue > 0 ? input.ticketValue : 350,
           brand: { ...DEFAULT_BRAND, displayName: name } as Prisma.InputJsonValue,
         },
       });
-      await bootstrapProject(tx, p.id, user.id, { launch });
+      await bootstrapProject(tx, p.id, user.id, { launch, budget: p.initialBudget, brand: name });
       return p;
     });
     await audit({ projectId: project.id, userId: user.id, action: "create", entity: "project", entityId: project.id });
@@ -45,13 +47,17 @@ const projectSchema = z.object({
   segment: z.string().trim().max(300).optional().nullable(),
   launchDate: z.string().optional().nullable(),
   launchDateConfirmed: z.boolean(),
+  ticketValue: z.number({ invalid_type_error: "Ticket médio inválido." }).positive("Ticket médio deve ser maior que zero."),
+  initialBudget: z.number({ invalid_type_error: "Verba inicial inválida." }).positive("Verba inicial deve ser maior que zero."),
+  agencyName: z.string().trim().min(2, "Nome da agência muito curto.").max(120),
   briefing: z.record(z.string(), z.string().max(4000)),
 });
 
 export async function updateProjectAction(projectId: string, input: z.infer<typeof projectSchema>) {
   return run(async () => {
     const ctx = await actionContext(projectId, "manage");
-    const d = projectSchema.parse(input);
+    const { agencyName, ...d } = projectSchema.parse(input);
+    await prisma.agency.update({ where: { id: ctx.agencyId }, data: { name: agencyName } });
     await prisma.project.update({
       where: { id: projectId },
       data: {
@@ -125,7 +131,7 @@ export async function inviteAction(projectId: string, input: { email: string; na
       },
     });
     const link = `${appUrl()}/convite/${token}`;
-    const { sent } = await sendMail(email, "Convite — Awake Campaign Lab", `${ctx.user.name} convidou você para colaborar.\nAceite em até 7 dias: ${link}`);
+    const { sent } = await sendMail(email, "Convite — Campaign Forge", `${ctx.user.name} convidou você para colaborar.\nAceite em até 7 dias: ${link}`);
     await audit({ projectId, userId: ctx.user.id, action: "invite", entity: "invite", entityId: inv.id, data: { email, role } });
     revalidatePath(`/p/${projectId}/configuracoes`);
     return { link, sent };

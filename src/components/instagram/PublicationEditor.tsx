@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useProject, MemberSelect } from "@/components/project-context";
 import { ConfirmButton, Field, Tabs, useAction, Badge } from "@/components/ui";
@@ -11,9 +11,11 @@ import { requestApprovalAction } from "@/app/actions/collab";
 import { JOURNEY, PUB_STATUS, PUB_STATUS_LABEL, PUB_TYPE } from "@/lib/labels";
 import { diffWords } from "@/lib/diff";
 import { dateTimeBr } from "@/lib/format";
-import { PostPreview } from "./PostPreview";
 import { Media } from "./PhoneProfile";
-import type { IgProfile, IgPub, MediaFile } from "./types";
+import { PhoneSim } from "./PhoneSim";
+import type { IgHighlight, IgProfile, IgPub, MediaFile } from "./types";
+
+const AD_CTAS = ["Saiba mais", "Comprar agora", "Enviar mensagem", "Ver coleção", "Fale conosco"];
 
 type Version = { id: string; version: number; caption: string | null; hashtags: string | null; cta: string | null; mediaFileIds: string[]; note: string | null; authorId: string; createdAt: string };
 
@@ -31,6 +33,11 @@ export function PublicationEditor({
   campaigns,
   defaults,
   onDone,
+  highlights = [],
+  pubs = [],
+  followersByMonth,
+  onDraft,
+  inlinePreview = true,
 }: {
   pub: IgPub | null;
   profile: IgProfile;
@@ -38,6 +45,13 @@ export function PublicationEditor({
   campaigns: { id: string; name: string }[];
   defaults?: Partial<IgPub>;
   onDone: () => void;
+  highlights?: IgHighlight[];
+  pubs?: IgPub[];
+  followersByMonth?: Record<number, number>;
+  /** recebe o rascunho a cada alteração (prévia ao vivo em outro celular) */
+  onDraft?: (p: IgPub | null) => void;
+  /** mostra o celular com a prévia ao lado do formulário */
+  inlinePreview?: boolean;
 }) {
   const p = useProject();
   const router = useRouter();
@@ -58,6 +72,10 @@ export function PublicationEditor({
     product: pub?.product ?? "",
     responsibleId: pub?.responsibleId ?? null,
     campaignId: pub?.campaignId ?? null,
+    location: pub?.location ?? "",
+    isAd: pub?.isAd ?? false,
+    adCta: pub?.adCta ?? "Saiba mais",
+    highlightId: pub?.highlightId ?? null,
     status: (pub?.status ?? "DRAFT") as PubInput["status"],
     hypotheticalLikes: pub?.hypotheticalLikes ?? null,
     hypotheticalComments: pub?.hypotheticalComments ?? null,
@@ -69,9 +87,41 @@ export function PublicationEditor({
   const media = files.filter((f) => f.mime.startsWith("image/") || f.mime === "video/mp4");
   const captionLen = (v.caption ?? "").length;
   const tags = ((v.hashtags ?? "").match(/#/g) ?? []).length;
+  const [draftId] = useState(() => pub?.id ?? `novo-${Math.random().toString(36).slice(2)}`);
+  const draftKey = JSON.stringify(v);
+  const draft = useMemo<IgPub>(() => ({
+    id: draftId,
+    type: v.type,
+    title: v.title || "Nova publicação",
+    caption: v.caption ?? null,
+    hashtags: v.hashtags ?? null,
+    cta: v.cta ?? null,
+    mediaFileIds: v.mediaFileIds,
+    coverColor: v.coverColor ?? null,
+    scheduledAt: v.scheduledAt ?? null,
+    objective: v.objective ?? null,
+    journeyStage: v.journeyStage ?? null,
+    product: v.product ?? null,
+    responsibleId: v.responsibleId ?? null,
+    campaignId: v.campaignId ?? null,
+    location: v.location ?? null,
+    isAd: !!v.isAd,
+    adCta: v.adCta ?? null,
+    highlightId: v.highlightId ?? null,
+    status: v.status,
+    feedOrder: pub?.feedOrder ?? -1e12,
+    hypotheticalLikes: v.hypotheticalLikes,
+    hypotheticalComments: v.hypotheticalComments,
+    hypotheticalViews: v.hypotheticalViews,
+    createdById: pub?.createdById ?? p.userId,
+  }), [draftKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    onDraft?.(draft);
+  }, [draftKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => onDraft?.(null), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+    <div className={`grid gap-6 ${inlinePreview ? "xl:grid-cols-[1fr_380px]" : ""}`}>
       <div className="min-w-0 space-y-4">
         {pub && <Tabs value={tab} onChange={setTab} items={[{ value: "edit", label: "Conteúdo" }, { value: "versions", label: "Versões" }, { value: "comments", label: "Comentários e histórico" }]} />}
         {tab === "edit" && (
@@ -80,7 +130,7 @@ export function PublicationEditor({
               <Field label="Formato"><select className="input" value={v.type} onChange={(e) => set("type", e.target.value as PubInput["type"])}>{PUB_TYPE.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></Field>
               <Field label="Título interno *"><input className="input" value={v.title} onChange={(e) => set("title", e.target.value)} required /></Field>
               <div className="sm:col-span-2"><Field label={`Legenda (${captionLen}/2200)`}><textarea className="input min-h-[110px]" value={v.caption ?? ""} onChange={(e) => set("caption", e.target.value)} /></Field></div>
-              <Field label={`Hashtags (${tags}/30)`}><input className="input" value={v.hashtags ?? ""} onChange={(e) => set("hashtags", e.target.value)} placeholder="#awake #decoracao" /></Field>
+              <Field label={`Hashtags (${tags}/30)`}><input className="input" value={v.hashtags ?? ""} onChange={(e) => set("hashtags", e.target.value)} placeholder="#marca #campanha" /></Field>
               <Field label="CTA"><input className="input" value={v.cta ?? ""} onChange={(e) => set("cta", e.target.value)} placeholder="Saiba mais" /></Field>
               <div className="sm:col-span-2">
                 <span className="label">Mídias ({v.mediaFileIds.length}/10) — clique para adicionar/remover; ordem = ordem do carrossel</span>
@@ -113,6 +163,15 @@ export function PublicationEditor({
               <Field label="Produto"><input className="input" value={v.product ?? ""} onChange={(e) => set("product", e.target.value)} /></Field>
               <Field label="Responsável"><MemberSelect value={v.responsibleId} onChange={(x) => set("responsibleId", x)} /></Field>
               <Field label="Campanha"><select className="input" value={v.campaignId ?? ""} onChange={(e) => set("campaignId", e.target.value || null)}><option value="">—</option>{campaigns.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
+              {v.type === "STORY" ? (
+                <Field label="Destaque do perfil"><select className="input" value={v.highlightId ?? ""} onChange={(e) => set("highlightId", e.target.value || null)}><option value="">— nenhum —</option>{highlights.map((h) => <option key={h.id} value={h.id}>{h.title}</option>)}</select></Field>
+              ) : (
+                <Field label="Localização"><input className="input" value={v.location ?? ""} onChange={(e) => set("location", e.target.value)} placeholder="Ex.: São Paulo" /></Field>
+              )}
+              <div className="flex flex-wrap items-end gap-3 rounded-lg border border-areia bg-areia/30 p-3 sm:col-span-2">
+                <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={!!v.isAd} onChange={(e) => set("isAd", e.target.checked)} /> <strong>Simular como anúncio</strong> — mostra “Patrocinado” e o botão do anúncio</label>
+                {v.isAd && <Field label="Botão do anúncio"><select className="input" value={v.adCta ?? "Saiba mais"} onChange={(e) => set("adCta", e.target.value)}>{AD_CTAS.map((c) => <option key={c}>{c}</option>)}</select></Field>}
+              </div>
               <div className="grid grid-cols-3 gap-2 sm:col-span-2">
                 <Field label="Curtidas (hipotético)"><input type="number" min={0} className="input" value={v.hypotheticalLikes ?? ""} onChange={(e) => set("hypotheticalLikes", e.target.value === "" ? null : Number(e.target.value))} /></Field>
                 <Field label="Comentários (hipotético)"><input type="number" min={0} className="input" value={v.hypotheticalComments ?? ""} onChange={(e) => set("hypotheticalComments", e.target.value === "" ? null : Number(e.target.value))} /></Field>
@@ -135,10 +194,12 @@ export function PublicationEditor({
         {tab === "versions" && pub && <Versions pubId={pub.id} files={fileMap} />}
         {tab === "comments" && pub && <Thread targetType="publication" targetId={pub.id} link={`${p.base}/editorial?p=${pub.id}`} />}
       </div>
-      <div>
-        <p className="label mb-2 text-center">Prévia mobile {pub && <Badge>{PUB_STATUS_LABEL[pub.status]}</Badge>}</p>
-        <PostPreview pub={{ ...v, type: v.type, caption: v.caption ?? null, hashtags: v.hashtags ?? null, cta: v.cta ?? null, coverColor: v.coverColor ?? null, hypotheticalLikes: v.hypotheticalLikes ?? null, hypotheticalComments: v.hypotheticalComments ?? null, hypotheticalViews: v.hypotheticalViews ?? null }} profile={profile} files={fileMap} />
-      </div>
+      {inlinePreview && (
+        <div>
+          <p className="label mb-2 text-center">Prévia no app {pub && <Badge>{PUB_STATUS_LABEL[pub.status]}</Badge>}</p>
+          <PhoneSim profile={profile} highlights={highlights} pubs={pubs} files={fileMap} followersByMonth={followersByMonth} focus={draft} />
+        </div>
+      )}
     </div>
   );
 }

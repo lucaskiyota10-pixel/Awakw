@@ -1,6 +1,8 @@
-# AWAKE CAMPAIGN LAB
+# Campaign Forge
 
-Plataforma web colaborativa para planejar, simular, comparar e documentar a campanha de lançamento da **Awake Home Decor** (extensível a outras agências e projetos): autenticação, papéis, chat em tempo real, tarefas, calendário, Instagram Studio (perfil fictício), campanhas com testes A/B simulados, simulador de métricas, **Awake Growth Simulator** (semana → ano), planejamento de verba, painel de Planejamento Digital, pesquisa/SWOT, documentos colaborativos com exportação **DOCX/PDF (ABNT)** e modo apresentação com exportação **PDF/PPTX**.
+> **Quer só colocar no ar?** Siga o [DEPLOY.md](DEPLOY.md) — Render + Neon, gratuito, sem instalar nada.
+
+Plataforma web colaborativa para planejar, simular, comparar e documentar campanhas publicitárias. Nasceu para o lançamento da **Awake Home Decor**, mas tudo é editável por projeto — agência, marca, cores, data de lançamento, verba inicial e ticket médio (que alimentam os simuladores): autenticação, papéis, chat em tempo real, tarefas, calendário, Instagram Studio (simulador interativo do app: logo como foto de perfil, feed arrastável, carrosséis, Reels, stories com destaques, anúncios “Patrocinado”), campanhas com testes A/B simulados, simulador de métricas, **Growth Simulator** (semana → ano), planejamento de verba, painel de Planejamento Digital, pesquisa/SWOT, documentos colaborativos com exportação **DOCX/PDF (ABNT)** e modo apresentação com exportação **PDF/PPTX**.
 
 > **SIMULAÇÃO ACADÊMICA — RESULTADOS HIPOTÉTICOS. NÃO REPRESENTAM DESEMPENHO GARANTIDO.**
 > A plataforma não se conecta ao Instagram/Meta, não inventa desempenho, bibliografia nem aprovações. Toda premissa declara sua origem (briefing confirmado, fonte externa documentada, hipótese da equipe ou cálculo).
@@ -14,7 +16,7 @@ Plataforma web colaborativa para planejar, simular, comparar e documentar a camp
 | Banco | PostgreSQL + Prisma (migrações em `prisma/migrations`) |
 | Autenticação | Sessões próprias: token aleatório em cookie `httpOnly`/`SameSite=Lax`, hash SHA-256 no banco, senhas com bcrypt (custo 12), limitação de tentativas |
 | Tempo real | Server-Sent Events (`/api/events/[projectId]`) com barramento em memória |
-| Arquivos | Disco local fora de `public/` (`UPLOAD_DIR`), servidos só por rota autenticada; verificação de tipo, extensão, tamanho e assinatura binária |
+| Arquivos | Disco local fora de `public/` (`UPLOAD_DIR`) ou no próprio PostgreSQL (`STORAGE_DRIVER=db`, para hospedagens sem disco), servidos só por rota autenticada; verificação de tipo, extensão, tamanho e assinatura binária |
 | Gráficos | Recharts (tela), barras vetoriais (PDF), PNG gerado sem dependências nativas (DOCX), gráficos nativos (PPTX) |
 | Exportação | `docx` (DOCX), `pdf-lib` (PDF com motor de layout próprio), `pptxgenjs` (PPTX editável) |
 | Testes | Vitest (motores de cálculo, permissões, exportadores) + script E2E multiusuário com Playwright |
@@ -73,10 +75,13 @@ Abra duas janelas (uma anônima) e entre com usuários diferentes — ex.: `luca
 
 ## Publicação
 
+**Caminho gratuito pronto:** [DEPLOY.md](DEPLOY.md) (Render + Neon, com o `render.yaml` deste repositório).
+
+Para outros provedores:
 1. Provisione PostgreSQL gerenciado (Neon, Supabase, RDS…) e configure as variáveis de `.env.example` no provedor (nunca no código).
-2. `npm ci && npx prisma migrate deploy && npm run build && npm start` (Node em servidor/contêiner — Render, Railway, Fly.io, VM).
-3. Configure `APP_URL` com a URL pública (https) — usada nos links de convite e recuperação.
-4. **Armazenamento**: `UPLOAD_DIR` precisa de disco persistente. Em plataformas sem disco persistente (ex.: serverless), troque a implementação de `src/lib/server/files.ts` por S3/R2 mantendo a interface `storeFile/readStored/deleteStored`.
+2. `npm ci --include=dev && npx prisma migrate deploy && npm run build && npm start` (Node em servidor/contêiner — Render, Railway, Fly.io, VM). Verificação de saúde: `GET /api/health`.
+3. `APP_URL` com a URL pública (https) — usada nos links de convite e recuperação (no Render, se vazia, usa-se `RENDER_EXTERNAL_URL`).
+4. **Armazenamento**: com disco persistente use `UPLOAD_DIR`; sem disco persistente use `STORAGE_DRIVER=db` (arquivos no PostgreSQL — prático para volumes pequenos; para muitos arquivos troque `src/lib/server/files.ts` por S3/R2 mantendo `storeFile/readStored/deleteStored`).
 5. **Tempo real**: o barramento SSE é em memória e atende uma instância. Para várias instâncias, substitua `src/lib/server/realtime.ts` por Postgres `LISTEN/NOTIFY` ou Redis pub/sub (mesma interface `publish/subscribe`). Plataformas serverless com tempo de execução curto não são adequadas para SSE.
 6. **E-mail**: preencha `SMTP_*` para enviar convites e recuperação de senha. Sem SMTP, o link de convite é exibido ao administrador e o de recuperação é registrado no log do servidor — nada é enviado nem declarado como enviado.
 

@@ -6,5 +6,5 @@ export const DEFAULT_BRAND = {
   fontSerif: "Cormorant Garamond",
   fontSans: "Inter",
   logoFileId: null as string | null,
-  displayName: "Awake Home Decor",
+  displayName: "Nova marca",
 };

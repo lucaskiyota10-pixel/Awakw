@@ -11,7 +11,7 @@ export default async function ProjectLayout({ children, params }: { children: Re
   const ctx = await pageContext(projectId);
   await ensureDeadlineAlerts(projectId, ctx.user.id);
   const [project, members, notifications] = await Promise.all([
-    prisma.project.findUniqueOrThrow({ where: { id: projectId }, select: { brand: true, name: true } }),
+    prisma.project.findUniqueOrThrow({ where: { id: projectId }, select: { brand: true, name: true, launchDate: true, initialBudget: true, ticketValue: true } }),
     projectMembers(projectId),
     prisma.notification.findMany({ where: { userId: ctx.user.id, projectId }, orderBy: { createdAt: "desc" }, take: 20 }),
   ]);
@@ -27,6 +27,7 @@ export default async function ProjectLayout({ children, params }: { children: Re
             userId: ctx.user.id,
             userName: ctx.user.name,
             role: ctx.role,
+            defaults: { launch: project.launchDate?.toISOString().slice(0, 10) ?? null, budget: project.initialBudget, ticket: project.ticketValue },
             members: members.map((m) => ({ id: m.id, name: m.name, nickname: m.nickname, role: m.role, sector: m.sector, responsibilities: m.responsibilities })),
           }}
         >

@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
-const g = globalThis as unknown as { prisma?: PrismaClient };
-export const prisma = g.prisma ?? new PrismaClient();
+// O conteúdo dos arquivos (FileAsset.data) só é carregado quando pedido explicitamente.
+const make = () => new PrismaClient({ omit: { fileAsset: { data: true } } });
+const g = globalThis as unknown as { prisma?: ReturnType<typeof make> };
+export const prisma = g.prisma ?? make();
 if (process.env.NODE_ENV !== "production") g.prisma = prisma;

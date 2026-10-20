@@ -18,6 +18,9 @@ export const PRIORITY_LABEL = Object.fromEntries(PRIORITY) as Record<string, str
 
 export const SECTORS = ["Planejamento", "Atendimento", "Criação", "Redação"];
 
+/** Ordem do fluxo de revisão das publicações. */
+export const PUB_FLOW = ["DRAFT", "WRITING", "CREATIVE", "PLANNING_REVIEW", "ACCOUNT_REVIEW", "APPROVED", "SCHEDULED"] as const;
+
 export const PUB_STATUS: [string, string][] = [
   ["DRAFT", "Rascunho"],
   ["WRITING", "Redação"],

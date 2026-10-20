@@ -1,5 +1,6 @@
 "use client";
 
+import { APP_NAME } from "@/lib/app";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -75,7 +76,7 @@ export function Shell({ children, notifications, logoUrl, brandName }: { childre
           )}
           <span>
             <span className="block font-serif text-xl leading-tight">{brandName}</span>
-            <span className="block text-[10px] uppercase tracking-[0.25em] text-taupe">Campaign Lab</span>
+            <span className="block text-[10px] uppercase tracking-[0.25em] text-taupe">{APP_NAME}</span>
           </span>
         </Link>
         <nav className="space-y-5">

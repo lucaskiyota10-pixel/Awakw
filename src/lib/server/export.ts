@@ -29,10 +29,10 @@ export async function resolveAssets(projectId: string, markdown: string): Promis
   const charts: ResolvedAssets["charts"] = new Map();
   for (const b of blocks) {
     if (b.type === "image" && !images.has(b.fileId)) {
-      const f = await prisma.fileAsset.findFirst({ where: { id: b.fileId, projectId } });
+      const f = await prisma.fileAsset.findFirst({ where: { id: b.fileId, projectId }, omit: { data: false } });
       if (!f || !f.mime.startsWith("image/")) continue;
       try {
-        const data = await readStored(f.storageKey);
+        const data = await readStored(f);
         const s = imageSize(data);
         if (s) images.set(b.fileId, { data, type: s.type, width: s.w, height: s.h });
       } catch {

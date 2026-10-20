@@ -66,7 +66,7 @@ function intro(d: Data) {
 
 ${P} — apresentar o contexto do trabalho, o problema de comunicação, os objetivos e a estrutura do documento.
 
-Este documento foi gerado a partir dos dados registrados pela equipe na plataforma Awake Campaign Lab para o cliente **${d.project.name}**${d.project.alternateName && !d.project.officialNameConfirmed ? ` (o briefing também apresenta a grafia "${d.project.alternateName}"; nome oficial pendente de confirmação)` : ""}. Números de simulação são hipotéticos: ${SIM_DISCLAIMER}
+Este documento foi gerado a partir dos dados registrados pela equipe na plataforma Campaign Forge para o cliente **${d.project.name}**${d.project.alternateName && !d.project.officialNameConfirmed ? ` (o briefing também apresenta a grafia "${d.project.alternateName}"; nome oficial pendente de confirmação)` : ""}. Números de simulação são hipotéticos: ${SIM_DISCLAIMER}
 `;
 }
 

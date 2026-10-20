@@ -6,13 +6,13 @@ import { useProject } from "@/components/project-context";
 import { Badge, Modal, PageHeader, Tabs, useAction } from "@/components/ui";
 import { CalendarView } from "@/components/CalendarView";
 import { PublicationEditor } from "@/components/instagram/PublicationEditor";
-import { PhoneProfile } from "@/components/instagram/PhoneProfile";
-import { setPublicationStatusAction, PUB_FLOW } from "@/app/actions/creative";
-import { PUB_STATUS, PUB_STATUS_LABEL, PUB_TYPE_LABEL } from "@/lib/labels";
+import { PhoneSim } from "@/components/instagram/PhoneSim";
+import { setPublicationStatusAction } from "@/app/actions/creative";
+import { PUB_FLOW, PUB_STATUS, PUB_STATUS_LABEL, PUB_TYPE_LABEL } from "@/lib/labels";
 import { dateTimeBr } from "@/lib/format";
 import type { IgHighlight, IgProfile, IgPub, MediaFile } from "@/components/instagram/types";
 
-export function Editorial({ profile, highlights, pubs, files, campaigns, openId }: { profile: IgProfile; highlights: IgHighlight[]; pubs: IgPub[]; files: MediaFile[]; campaigns: { id: string; name: string }[]; openId: string | null }) {
+export function Editorial({ profile, highlights, pubs, files, campaigns, openId, followersByMonth }: { profile: IgProfile; highlights: IgHighlight[]; pubs: IgPub[]; files: MediaFile[]; campaigns: { id: string; name: string }[]; openId: string | null; followersByMonth?: Record<number, number> }) {
   const p = useProject();
   const router = useRouter();
   const { exec } = useAction();
@@ -57,7 +57,7 @@ export function Editorial({ profile, highlights, pubs, files, campaigns, openId 
           ))}
         </div>
       )}
-      {view === "feed" && <PhoneProfile profile={profile} highlights={highlights} pubs={pubs} files={fileMap} onSelect={setOpen} />}
+      {view === "feed" && <div className="flex justify-center"><PhoneSim profile={profile} highlights={highlights} pubs={pubs} files={fileMap} followersByMonth={followersByMonth} onOpen={setOpen} /></div>}
       {view === "list" && (
         <div className="card overflow-x-auto p-0">
           <table className="table">
@@ -81,7 +81,7 @@ export function Editorial({ profile, highlights, pubs, files, campaigns, openId 
         </div>
       )}
       <Modal open={open !== null} onClose={close} title={open === "new" ? "Nova publicação" : "Publicação"} wide>
-        {open !== null && <PublicationEditor pub={open === "new" ? null : open} profile={profile} files={files} campaigns={campaigns} onDone={close} />}
+        {open !== null && <PublicationEditor pub={open === "new" ? null : open} profile={profile} files={files} campaigns={campaigns} highlights={highlights} pubs={pubs} followersByMonth={followersByMonth} onDone={close} />}
       </Modal>
     </div>
   );

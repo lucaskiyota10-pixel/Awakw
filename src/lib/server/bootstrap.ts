@@ -1,5 +1,5 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
-import { SUGGESTED_ALLOCATIONS } from "../budget";
+import { SUGGESTED_ALLOCATIONS, scaleTo } from "../budget";
 import { addMonths } from "../sim/dates";
 import { PROVISIONAL_LAUNCH } from "../sim/defaults";
 
@@ -62,7 +62,8 @@ const DIAGNOSTIC: [string, string][] = [
 
 type Tx = Prisma.TransactionClient | PrismaClient;
 
-export async function bootstrapProject(tx: Tx, projectId: string, userId: string, opts: { awake?: boolean; launch?: string } = {}) {
+export async function bootstrapProject(tx: Tx, projectId: string, userId: string, opts: { awake?: boolean; launch?: string; budget?: number; brand?: string } = {}) {
+  const budget = opts.budget && opts.budget > 0 ? opts.budget : 10000;
   const launch = opts.launch ?? PROVISIONAL_LAUNCH;
   await tx.channel.createMany({
     data: [
@@ -82,12 +83,12 @@ export async function bootstrapProject(tx: Tx, projectId: string, userId: string
   await tx.budgetPlan.create({
     data: {
       projectId,
-      name: "Sugestão inicial do briefing (não aprovada)",
-      total: 10000,
-      allocations: SUGGESTED_ALLOCATIONS as unknown as Prisma.InputJsonValue,
+      name: "Sugestão inicial 30/60/10 (não aprovada)",
+      total: budget,
+      allocations: scaleTo(budget, 10000, SUGGESTED_ALLOCATIONS) as unknown as Prisma.InputJsonValue,
       status: "PROPOSED",
       isSuggestion: true,
-      note: "Carregada do briefing como sugestão. Requer aprovação.",
+      note: "Sugestão inicial calculada sobre a verba do projeto. Requer aprovação.",
       authorId: userId,
     },
   });
@@ -116,9 +117,9 @@ export async function bootstrapProject(tx: Tx, projectId: string, userId: string
   await tx.instagramProfile.create({
     data: {
       projectId,
-      displayName: opts.awake ? "Awake Home Decor" : "Perfil fictício",
-      username: opts.awake ? "awake.homedecor" : "perfil.ficticio",
-      category: "Decoração de interiores",
+      displayName: opts.awake ? "Awake Home Decor" : opts.brand || "Nova marca",
+      username: opts.awake ? "awake.homedecor" : (opts.brand || "nova.marca").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/\s+/g, ".").replace(/[^a-z0-9._]/g, "").slice(0, 30) || "nova.marca",
+      category: opts.awake ? "Decoração de interiores" : "",
       bio: opts.awake ? "Arte de parede e esculturas de design personalizáveis.\nAcabamento premium. Feito para você." : "",
       link: "",
     },

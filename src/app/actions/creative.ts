@@ -8,6 +8,7 @@ import { actionContext, projectMembers } from "@/lib/server/access";
 import { audit } from "@/lib/server/audit";
 import { run, UserError } from "@/lib/server/action";
 import { notify } from "@/lib/server/notify";
+import { PUB_FLOW } from "@/lib/labels";
 import { publish } from "@/lib/server/realtime";
 import { can, canDelete } from "@/lib/permissions";
 
@@ -24,6 +25,9 @@ export async function saveProfileAction(projectId: string, input: Record<string,
         bio: z.string().max(150, "A bio do Instagram tem até 150 caracteres.").nullable().optional(),
         link: z.string().max(200).nullable().optional(),
         avatarFileId: z.string().nullable().optional(),
+        avatarFit: z.enum(["cover", "contain"]).default("cover"),
+        followersMode: z.enum(["manual", "scenario"]).default("manual"),
+        followersMonths: z.coerce.number().int().refine((m) => [0, 1, 3, 6, 12].includes(m), "Marco inválido.").default(1),
         hypotheticalFollowers: z.coerce.number().int().min(0),
         hypotheticalFollowing: z.coerce.number().int().min(0),
       })
@@ -36,7 +40,6 @@ export async function saveProfileAction(projectId: string, input: Record<string,
   });
 }
 
-export const PUB_FLOW = ["DRAFT", "WRITING", "CREATIVE", "PLANNING_REVIEW", "ACCOUNT_REVIEW", "APPROVED", "SCHEDULED"] as const;
 const FLOW_SECTOR: Record<string, string | null> = { WRITING: "Redação", CREATIVE: "Criação", PLANNING_REVIEW: "Planejamento", ACCOUNT_REVIEW: "Atendimento" };
 
 const pubSchema = z.object({
@@ -53,6 +56,10 @@ const pubSchema = z.object({
   product: z.string().max(200).nullable().optional(),
   responsibleId: z.string().nullable().optional(),
   campaignId: z.string().nullable().optional(),
+  location: z.string().max(120).nullable().optional(),
+  isAd: z.boolean().default(false),
+  adCta: z.string().max(40).nullable().optional(),
+  highlightId: z.string().nullable().optional(),
   status: z.enum(PUB_FLOW),
   hypotheticalLikes: optInt,
   hypotheticalComments: optInt,
@@ -71,12 +78,13 @@ export async function savePublicationAction(projectId: string, id: string | null
     if (d.mediaFileIds.length && (await prisma.fileAsset.count({ where: { projectId, id: { in: d.mediaFileIds } } })) !== d.mediaFileIds.length)
       throw new UserError("Mídia inválida.");
     if (d.campaignId && !(await prisma.campaign.findFirst({ where: { id: d.campaignId, projectId } }))) throw new UserError("Campanha inválida.");
+    if (d.highlightId && !(await prisma.highlight.findFirst({ where: { id: d.highlightId, projectId } }))) throw new UserError("Destaque inválido.");
     if (d.responsibleId && !(await projectMembers(projectId)).some((m) => m.id === d.responsibleId)) throw new UserError("Responsável inválido.");
     const prev = id ? await prisma.publication.findFirst({ where: { id, projectId }, include: { versions: { orderBy: { version: "desc" }, take: 1 } } }) : null;
     if (id && !prev) throw new UserError("Publicação não encontrada.");
     if ((d.status === "APPROVED" || d.status === "SCHEDULED") && prev?.status !== d.status && !can(ctx.role, "approve"))
       throw new UserError("Aprovação de peças é restrita a coordenadores/administradores. Use 'Solicitar aprovação'.");
-    const data = { ...d, scheduledAt: d.scheduledAt ? new Date(d.scheduledAt) : null, responsibleId: d.responsibleId || null, campaignId: d.campaignId || null };
+    const data = { ...d, scheduledAt: d.scheduledAt ? new Date(d.scheduledAt) : null, responsibleId: d.responsibleId || null, campaignId: d.campaignId || null, highlightId: d.type === "STORY" ? d.highlightId || null : null, location: d.location || null, adCta: d.isAd ? d.adCta || "Saiba mais" : null };
     const pub = prev
       ? await prisma.publication.update({ where: { id: prev.id }, data })
       : await prisma.publication.create({ data: { ...data, projectId, createdById: ctx.user.id, feedOrder: -Date.now() } });

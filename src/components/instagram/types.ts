@@ -5,6 +5,9 @@ export interface IgProfile {
   bio: string | null;
   link: string | null;
   avatarFileId: string | null;
+  avatarFit: "cover" | "contain";
+  followersMode: "manual" | "scenario";
+  followersMonths: number;
   hypotheticalFollowers: number;
   hypotheticalFollowing: number;
 }
@@ -30,6 +33,10 @@ export interface IgPub {
   product: string | null;
   responsibleId: string | null;
   campaignId: string | null;
+  location: string | null;
+  isAd: boolean;
+  adCta: string | null;
+  highlightId: string | null;
   status: string;
   feedOrder: number;
   hypotheticalLikes: number | null;

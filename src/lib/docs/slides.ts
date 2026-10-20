@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/lib/app";
 import PptxGenJS from "pptxgenjs";
 import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 import type { PresentationData } from "../server/presentation";
@@ -24,7 +25,7 @@ export async function renderPptx(data: PresentationData): Promise<Buffer> {
     sl.addText(`${idx + 1}/${total}`, { x: 12.3, y: 7.05, w: 0.9, h: 0.3, fontSize: 9, color: hex(accent), align: "right", fontFace: sans });
     if ("sim" in s && s.sim) sl.addText(SIM_DISCLAIMER, { x: 0.5, y: 7.05, w: 11.5, h: 0.3, fontSize: 9, bold: true, color: hex(c.carvao), fill: { color: hex(c.areia) }, fontFace: sans });
     if (s.kind === "cover") {
-      sl.addText("CAMPAIGN LAB", { x: 0.8, y: 1.2, w: 11, h: 0.4, fontSize: 12, color: hex(accent), charSpacing: 6, fontFace: sans });
+      sl.addText(APP_NAME.toUpperCase(), { x: 0.8, y: 1.2, w: 11, h: 0.4, fontSize: 12, color: hex(accent), charSpacing: 6, fontFace: sans });
       sl.addText(s.title, { x: 0.8, y: 1.8, w: 11.5, h: 1.6, fontSize: 54, color: ink, fontFace: serif });
       sl.addText(s.subtitle, { x: 0.8, y: 3.5, w: 11.5, h: 0.7, fontSize: 24, color: hex(accent), fontFace: serif });
       sl.addText(s.lines.join("\n"), { x: 0.8, y: 4.6, w: 11.5, h: 2, fontSize: 14, color: ink, fontFace: sans, valign: "top" });
@@ -136,7 +137,7 @@ export async function renderSlidesPdf(data: PresentationData): Promise<Buffer> {
       pg.drawText(clean(SIM_DISCLAIMER), { x: 44, y: 15, size: 8, font: b, color: col(c.carvao) });
     }
     if (s.kind === "cover") {
-      pg.drawText("CAMPAIGN LAB", { x: 60, y: 420, size: 11, font: r, color: accent });
+      pg.drawText(APP_NAME.toUpperCase(), { x: 60, y: 420, size: 11, font: r, color: accent });
       text(s.title, 60, 360, 44, serif);
       text(s.subtitle, 60, 300, 20, serif, accent);
       text(s.lines.join("\n"), 60, 240, 12);

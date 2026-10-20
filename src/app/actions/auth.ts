@@ -76,7 +76,7 @@ export async function requestResetAction(_: unknown, form: FormData) {
     data: { tokenHash: sha256(token), userId: user.id, expiresAt: new Date(Date.now() + 60 * 60000) },
   });
   const link = `${appUrl()}/redefinir/${token}`;
-  const { sent } = await sendMail(user.email, "Recuperação de senha — Awake Campaign Lab", `Para definir uma nova senha, acesse (válido por 1 hora):\n${link}`);
+  const { sent } = await sendMail(user.email, "Recuperação de senha — Campaign Forge", `Para definir uma nova senha, acesse (válido por 1 hora):\n${link}`);
   if (!sent) console.info(`[recuperação de senha] SMTP não configurado. Link para ${user.email}: ${link}`);
   await audit({ userId: user.id, action: "password_reset_requested", entity: "user", entityId: user.id });
   return generic;

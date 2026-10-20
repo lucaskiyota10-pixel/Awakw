@@ -19,6 +19,8 @@ interface Ctx {
   userName: string;
   role: RoleName;
   members: MemberLite[];
+  /** padrões do projeto para simuladores e verba (Configurações) */
+  defaults: { launch: string | null; budget: number; ticket: number };
 }
 
 const C = createContext<Ctx | null>(null);

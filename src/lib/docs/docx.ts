@@ -201,7 +201,7 @@ export async function renderDocx(markdown: string, meta: DocMeta, assets: Resolv
     },
   ];
   const doc = new Document({
-    creator: "Awake Campaign Lab",
+    creator: "Campaign Forge",
     title: meta.title,
     features: { updateFields: true },
     styles: {

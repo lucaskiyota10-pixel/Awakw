@@ -1,8 +1,8 @@
 {
-  "name": "awake-campaign-lab",
+  "name": "campaign-forge",
   "version": "0.1.0",
   "private": true,
-  "description": "AWAKE CAMPAIGN LAB — plataforma colaborativa de planejamento publicitário, simulação e documentação acadêmica",
+  "description": "Campaign Forge — plataforma colaborativa de planejamento publicitário, simulação e documentação acadêmica",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -54,5 +54,8 @@
   },
   "overrides": {
     "react-is": "19.1.1"
+  },
+  "engines": {
+    "node": ">=20.18"
   }
 }

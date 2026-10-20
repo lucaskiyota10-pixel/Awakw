@@ -8,7 +8,9 @@ import { Chart, Stat } from "@/components/charts";
 import { Thread } from "@/components/Thread";
 import { saveBudgetPlanAction, approveBudgetPlanAction, deleteBudgetPlanAction } from "@/app/actions/scenarios";
 import { requestApprovalAction } from "@/app/actions/collab";
-import { percentages, rebalance, scaleTo, validateAllocations, round2, type Allocation } from "@/lib/budget";
+import { percentages, rebalance, scaleTo, validateAllocations, round2, SUGGESTED_ALLOCATIONS, type Allocation } from "@/lib/budget";
+
+const suggestedFor = (total: number) => scaleTo(total, 10000, SUGGESTED_ALLOCATIONS);
 import { simulateMetrics } from "@/lib/sim/metrics";
 import { readMetrics } from "@/lib/sim/scenario";
 import { brl, dateTimeBr, num, pct } from "@/lib/format";
@@ -23,14 +25,14 @@ export function Budget({ plans, scenarios }: { plans: Plan[]; scenarios: { id: s
   const approved = plans.find((x) => x.status === "APPROVED") ?? null;
   const [selId, setSelId] = useState<string | null>(plans.find((x) => x.status === "PROPOSED")?.id ?? plans[0]?.id ?? null);
   const sel = plans.find((x) => x.id === selId) ?? null;
-  const [draft, setDraft] = useState(() => (sel ? { name: sel.name, total: sel.total, allocations: sel.allocations, note: sel.note ?? "" } : { name: "Nova proposta", total: 10000, allocations: [] as Allocation[], note: "" }));
+  const [draft, setDraft] = useState(() => (sel ? { name: sel.name, total: sel.total, allocations: sel.allocations, note: sel.note ?? "" } : { name: "Nova proposta", total: p.defaults.budget, allocations: suggestedFor(p.defaults.budget), note: "" }));
   const [scenarioId, setScenarioId] = useState(scenarios.find((s) => s.status === "APPROVED")?.id ?? scenarios.find((s) => s.name.includes("Moderado"))?.id ?? scenarios[0]?.id ?? "");
   const v = validateAllocations(draft.total, draft.allocations);
   const locked = sel?.status === "APPROVED" || sel?.status === "SUPERSEDED" || !p.can("edit");
 
   const load = (pl: Plan | null) => {
     setSelId(pl?.id ?? null);
-    setDraft(pl ? { name: pl.name, total: pl.total, allocations: pl.allocations, note: pl.note ?? "" } : { name: "Nova proposta", total: 10000, allocations: [{ key: "a", label: "Linha 1", amount: 10000 }], note: "" });
+    setDraft(pl ? { name: pl.name, total: pl.total, allocations: pl.allocations, note: pl.note ?? "" } : { name: "Nova proposta", total: p.defaults.budget, allocations: suggestedFor(p.defaults.budget), note: "" });
   };
 
   // projeções atualizadas: usa as premissas do cenário de métricas escolhido, com a distribuição desta verba
@@ -49,7 +51,7 @@ export function Budget({ plans, scenarios }: { plans: Plan[]; scenarios: { id: s
 
   return (
     <div>
-      <PageHeader title="Planejamento de verba" subtitle="A sugestão do briefing (30/60/10 sobre R$ 10.000) é carregada como proposta NÃO aprovada. Verba aprovada só por coordenadores/administradores." />
+      <PageHeader title="Planejamento de verba" subtitle={`A sugestão inicial (30/60/10 sobre ${brl(p.defaults.budget, 0)}, a verba informada nas Configurações) é carregada como proposta NÃO aprovada. Verba aprovada só por coordenadores/administradores.`} />
       <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Stat label="Verba aprovada vigente" value={approved ? brl(approved.total, 0) : "Nenhuma"} hint={approved ? `${approved.name} · aprovada por ${p.memberName(approved.approvedById)}` : "Aguardando aprovação"} />
         <Stat label="Proposta selecionada" value={brl(draft.total, 0)} hint={sel ? STATUS[sel.status][0] : "Não salva"} />

@@ -56,12 +56,17 @@ export function validateUpload(name: string, mime: string, buf: Buffer): string 
   return null;
 }
 
-export async function storeFile(projectId: string, buf: Buffer, ext: string) {
+/** "db" guarda o conteúdo no PostgreSQL (hospedagens sem disco persistente, como Render/Railway grátis); "disk" usa UPLOAD_DIR. */
+export const storageDriver = () => (process.env.STORAGE_DRIVER === "db" ? "db" : "disk");
+
+/** Grava o arquivo. No modo "db" devolve os bytes para irem no próprio registro FileAsset. */
+export async function storeFile(projectId: string, buf: Buffer, ext: string): Promise<{ key: string; data: Uint8Array<ArrayBuffer> | null }> {
+  if (storageDriver() === "db") return { key: `db:${projectId}/${randomUUID()}${ext}`, data: new Uint8Array(buf) };
   const key = `${projectId}/${randomUUID()}${ext}`;
   const full = path.join(root(), key);
   await mkdir(path.dirname(full), { recursive: true });
   await writeFile(full, buf);
-  return key;
+  return { key, data: null };
 }
 
 function safePath(key: string) {
@@ -70,8 +75,13 @@ function safePath(key: string) {
   return full;
 }
 
-export const readStored = (key: string) => readFile(safePath(key));
-export const deleteStored = (key: string) => unlink(safePath(key)).catch(() => undefined);
+/** Lê o conteúdo de um FileAsset (do banco ou do disco). */
+export async function readStored(file: { storageKey: string; data?: Uint8Array | null }): Promise<Buffer> {
+  if (file.data) return Buffer.from(file.data);
+  if (file.storageKey.startsWith("db:")) throw new Error("Arquivo sem conteúdo no banco");
+  return readFile(safePath(file.storageKey));
+}
+export const deleteStored = (key: string) => (key.startsWith("db:") ? Promise.resolve() : unlink(safePath(key)).catch(() => undefined));
 
 export function safeFileName(name: string) {
   return name.replace(/[^\p{L}\p{N}._ -]/gu, "_").slice(0, 120) || "arquivo";

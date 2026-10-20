@@ -32,7 +32,7 @@ export function GrowthSim({
   const p = useProject();
   const init = scenarios.find((s) => s.id === initialId);
   const [currentId, setCurrentId] = useState<string | null>(init?.id ?? null);
-  const [v, setV] = useState<GrowthPremises>(() => (init ? readGrowth(init.premises).values : defaultGrowth("MODERATE")));
+  const [v, setV] = useState<GrowthPremises>(() => (init ? readGrowth(init.premises).values : defaultGrowth("MODERATE", p.defaults)));
   const [sources, setSources] = useState<SourceMap>(() => (init ? readGrowth(init.premises).sources : defaultGrowthSources()));
   const [tab, setTab] = useState<Tab>(initialTab);
   const out = useMemo(() => simulateGrowth(v), [v]);
@@ -40,7 +40,7 @@ export function GrowthSim({
 
   return (
     <div>
-      <PageHeader title="Awake Growth Simulator" subtitle="Projeções semanais, mensais, trimestrais, semestrais e anuais. Recalcula instantaneamente; nada cresce proporcionalmente sem premissas declaradas." />
+      <PageHeader title="Growth Simulator" subtitle="Projeções semanais, mensais, trimestrais, semestrais e anuais. Recalcula instantaneamente; nada cresce proporcionalmente sem premissas declaradas." />
       <SimBanner className="mb-4" />
       <ScenarioBar
         kind="GROWTH"
@@ -56,7 +56,7 @@ export function GrowthSim({
             setSources(r.sources);
           }
         }}
-        onPreset={(l) => { setCurrentId(null); setV(defaultGrowth(l)); setSources(defaultGrowthSources()); }}
+        onPreset={(l) => { setCurrentId(null); setV(defaultGrowth(l, p.defaults)); setSources(defaultGrowthSources()); }}
       />
       <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
         <div className="xl:sticky xl:top-20 xl:max-h-[calc(100vh-100px)] xl:overflow-y-auto xl:pr-1">

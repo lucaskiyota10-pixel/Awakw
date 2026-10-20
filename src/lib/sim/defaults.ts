@@ -1,7 +1,7 @@
 /**
  * Premissas iniciais demonstrativas. TODAS as taxas de mídia/funil abaixo são
  * HIPÓTESES DA EQUIPE a validar — não são benchmarks externos nem histórico real
- * (a Awake não possui histórico de mídia paga).
+ * (projetos novos não têm histórico de mídia paga).
  */
 import type { GrowthPremises } from "./growth";
 import type { MetricsInput } from "./metrics";
@@ -16,8 +16,18 @@ export const LEVEL_LABEL: Record<Level | "CUSTOM", string> = {
   CUSTOM: "Personalizado",
 };
 
-/** Data de lançamento provisória — briefing indica 1ª ou 2ª semana de nov/2026 (pendente). */
+/** Data usada quando o projeto não informa a sua. */
 export const PROVISIONAL_LAUNCH = "2026-11-09";
+
+/** Valores do projeto que alimentam os padrões dos simuladores (vêm das Configurações). */
+export interface ProjectDefaults {
+  launch?: string | null;
+  budget?: number | null;
+  ticket?: number | null;
+}
+const TICKET_K: Record<Level, number> = { CONSERVATIVE: 0.86, MODERATE: 1, OPTIMISTIC: 1.14 };
+const ticketFor = (level: Level, k: { averageTicket: number }, ctx: ProjectDefaults) =>
+  ctx.ticket && ctx.ticket > 0 ? Math.round(ctx.ticket * TICKET_K[level]) : k.averageTicket;
 
 const flat = () => new Array(12).fill(1);
 
@@ -38,16 +48,17 @@ const KNOBS: Record<Level, LevelKnobs> = {
   OPTIMISTIC: { cpm: 18, ctr: 0.018, addToCartRate: 0.08, checkoutRate: 0.6, purchaseRate: 0.65, organicReachRate: 0.18, followRate: 0.14, averageTicket: 400 },
 };
 
-export function defaultGrowth(level: Level = "MODERATE"): GrowthPremises {
+export function defaultGrowth(level: Level = "MODERATE", ctx: ProjectDefaults = {}): GrowthPremises {
+  const budget = ctx.budget && ctx.budget > 0 ? ctx.budget : 10000;
   const k = KNOBS[level];
   return {
-    startDate: PROVISIONAL_LAUNCH,
+    startDate: ctx.launch || PROVISIONAL_LAUNCH,
     horizon: "YEAR",
     budgetMode: "ONE_TIME",
-    oneTimeBudget: 10000,
+    oneTimeBudget: budget,
     spendDays: 90,
     spendCurve: "UNIFORM",
-    monthlyBudget: 3000,
+    monthlyBudget: Math.round(budget * 0.3),
     monthsOfInvestment: 12,
     cpm: k.cpm,
     ctr: k.ctr,
@@ -59,7 +70,7 @@ export function defaultGrowth(level: Level = "MODERATE"): GrowthPremises {
     addToCartRate: k.addToCartRate,
     checkoutRate: k.checkoutRate,
     purchaseRate: k.purchaseRate,
-    averageTicket: k.averageTicket,
+    averageTicket: ticketFor(level, k, ctx),
     initialFollowers: 0,
     postsPerWeek: 3,
     reelsPerWeek: 2,
@@ -84,9 +95,9 @@ export function defaultGrowth(level: Level = "MODERATE"): GrowthPremises {
 export function defaultGrowthSources(): SourceMap {
   const h = { origin: "HYPOTHESIS" as const, note: "Hipótese inicial — validar" };
   return {
-    startDate: { origin: "HYPOTHESIS", note: "Briefing: 1ª ou 2ª semana de nov/2026; data exata pendente" },
-    oneTimeBudget: { origin: "BRIEFING", note: "Verba sugerida de R$ 10.000 (não aprovada)" },
-    averageTicket: { origin: "BRIEFING", note: "Briefing: ticket médio estimado R$ 300–400 (até ~R$ 900)" },
+    startDate: { origin: "BRIEFING", note: "Data de lançamento informada no projeto" },
+    oneTimeBudget: { origin: "BRIEFING", note: "Verba inicial informada no projeto (não aprovada)" },
+    averageTicket: { origin: "BRIEFING", note: "Ticket médio informado no projeto" },
     initialFollowers: { origin: "HYPOTHESIS", note: "Perfil considerado novo; confirmar base atual" },
     cpm: h,
     ctr: h,
@@ -100,11 +111,11 @@ export function defaultGrowthSources(): SourceMap {
   };
 }
 
-export function defaultMetrics(level: Level = "MODERATE"): MetricsInput {
+export function defaultMetrics(level: Level = "MODERATE", ctx: ProjectDefaults = {}): MetricsInput {
   const k = KNOBS[level];
   return {
     budgetMode: "TOTAL",
-    totalBudget: 10000,
+    totalBudget: ctx.budget && ctx.budget > 0 ? ctx.budget : 10000,
     dailyBudget: 111.11,
     durationDays: 90,
     media: { costBasis: "CPM", cpm: k.cpm, cpc: 2, ctr: k.ctr, frequency: 2.5 },
@@ -113,7 +124,7 @@ export function defaultMetrics(level: Level = "MODERATE"): MetricsInput {
       addToCartRate: k.addToCartRate,
       checkoutRate: k.checkoutRate,
       purchaseRate: k.purchaseRate,
-      averageTicket: k.averageTicket,
+      averageTicket: ticketFor(level, k, ctx),
     },
     campaigns: [
       { id: "awareness", name: "Reconhecimento/Engajamento", share: 0.3, media: { ctr: k.ctr * 0.7 } },
@@ -126,8 +137,8 @@ export function defaultMetrics(level: Level = "MODERATE"): MetricsInput {
 export function defaultMetricsSources(): SourceMap {
   const h = { origin: "HYPOTHESIS" as const, note: "Hipótese inicial — validar" };
   return {
-    totalBudget: { origin: "BRIEFING", note: "Verba sugerida de R$ 10.000 (não aprovada)" },
-    averageTicket: { origin: "BRIEFING", note: "Briefing: R$ 300–400" },
+    totalBudget: { origin: "BRIEFING", note: "Verba inicial informada no projeto (não aprovada)" },
+    averageTicket: { origin: "BRIEFING", note: "Ticket médio informado no projeto" },
     distribution: { origin: "BRIEFING", note: "Sugestão 30/60/10 — não aprovada" },
     cpm: h,
     ctr: h,

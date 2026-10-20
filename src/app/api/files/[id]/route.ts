@@ -5,13 +5,13 @@ import { readStored } from "@/lib/server/files";
 /** Download protegido: só membros da agência do projeto do arquivo. */
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const file = await prisma.fileAsset.findUnique({ where: { id } });
+  const file = await prisma.fileAsset.findUnique({ where: { id }, omit: { data: false } });
   if (!file) return new Response("Não encontrado", { status: 404 });
   const ctx = await loadProjectContext(file.projectId);
   if (!ctx) return new Response("Não encontrado", { status: 404 });
   let buf: Buffer;
   try {
-    buf = await readStored(file.storageKey);
+    buf = await readStored(file);
   } catch {
     return new Response("Arquivo indisponível", { status: 410 });
   }
