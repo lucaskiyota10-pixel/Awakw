@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --c-carvao: 37 37 33;      /* #252521 */
+  --c-taupe: 182 161 139;    /* #B6A18B */
+  --c-areia: 233 226 216;    /* #E9E2D8 */
+  --c-marfim: 248 246 241;   /* #F8F6F1 */
+  --c-destaque: 182 161 139; /* destaque configurável (ex.: rosa modernidade) */
+  --font-serif: "Cormorant Garamond";
+  --font-sans: "Inter";
+}
+
+html { color-scheme: light; }
+body { @apply bg-marfim text-carvao font-sans antialiased; }
+h1, h2, h3 { @apply font-serif tracking-tight; }
+
+@layer components {
+  .card { @apply rounded-xl border border-areia bg-white/80 p-5 shadow-[0_1px_2px_rgba(37,37,33,0.04)]; }
+  .card-title { @apply font-serif text-xl text-carvao; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-taupe disabled:cursor-not-allowed disabled:opacity-50; }
+  .btn-primary { @apply btn bg-carvao text-marfim hover:bg-carvao/90; }
+  .btn-secondary { @apply btn border border-taupe/60 bg-white text-carvao hover:bg-areia/60; }
+  .btn-ghost { @apply btn text-carvao hover:bg-areia/70; }
+  .btn-danger { @apply btn border border-red-300 bg-white text-red-700 hover:bg-red-50; }
+  .btn-sm { @apply px-2.5 py-1 text-xs; }
+  .input { @apply w-full rounded-lg border border-areia bg-white px-3 py-2 text-sm text-carvao placeholder:text-carvao/40 focus:border-taupe focus:outline-none focus:ring-2 focus:ring-taupe/30 disabled:bg-areia/30; }
+  .label { @apply mb-1 block text-xs font-medium uppercase tracking-wide text-carvao/70; }
+  .badge { @apply inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium; }
+  .table { @apply w-full text-left text-sm; }
+  .table th { @apply border-b border-areia px-3 py-2 text-xs font-medium uppercase tracking-wide text-carvao/60; }
+  .table td { @apply border-b border-areia/60 px-3 py-2 align-top; }
+  .muted { @apply text-carvao/60; }
+  .sim-banner { @apply rounded-lg border border-taupe/50 bg-areia/70 px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-[0.12em] text-carvao; }
+}
+
+/* Modo apresentação: esconde controles administrativos */
+.presenting [data-admin] { display: none !important; }
+
+@media print {
+  aside, header, [data-admin], .no-print { display: none !important; }
+  body { background: white; }
+}
