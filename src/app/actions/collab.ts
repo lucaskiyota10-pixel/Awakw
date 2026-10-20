@@ -204,7 +204,10 @@ async function setTargetStatus(projectId: string, type: string, id: string, stat
       await prisma.publication.updateMany({ where: { id, projectId }, data: { status: status === "APPROVED" ? "APPROVED" : status === "REJECTED" ? "WRITING" : "ACCOUNT_REVIEW" } });
       return;
     case "budget":
-      if (status === "APPROVED") await prisma.budgetPlan.updateMany({ where: { id, projectId }, data: { status: "APPROVED", approvedById: userId, approvedAt: now } });
+      if (status === "APPROVED") {
+        await prisma.budgetPlan.updateMany({ where: { projectId, status: "APPROVED", id: { not: id } }, data: { status: "SUPERSEDED" } });
+        await prisma.budgetPlan.updateMany({ where: { id, projectId }, data: { status: "APPROVED", approvedById: userId, approvedAt: now } });
+      }
       return;
     case "task":
       await prisma.task.updateMany({ where: { id, projectId }, data: { status: status === "APPROVED" ? "APPROVED" : status === "REJECTED" ? "IN_PROGRESS" : "AWAITING_APPROVAL" } });
