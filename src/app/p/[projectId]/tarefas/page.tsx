@@ -23,7 +23,7 @@ export default async function TasksPage({ params, searchParams }: { params: Prom
     dependsOn: x.dependsOn,
     order: x.order,
     createdById: x.createdById,
-    files: files.filter((f) => f.folder === `task:${x.id}`).map(({ folder: _f, ...f }) => f),
+    files: files.filter((f) => f.folder === `task:${x.id}`).map((f) => ({ id: f.id, name: f.name, mime: f.mime })),
   }));
   return <Kanban tasks={lite} openId={t ?? null} />;
 }

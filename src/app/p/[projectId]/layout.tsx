@@ -18,7 +18,6 @@ export default async function ProjectLayout({ children, params }: { children: Re
   const brand = brandOf(project.brand);
   return (
     <div style={brandStyle(brand) as React.CSSProperties}>
-      {/* eslint-disable-next-line @next/next/no-page-custom-font */}
       <link rel="stylesheet" href={fontHref(brand)} />
       <ToastProvider>
         <ProjectProvider
@@ -28,7 +27,7 @@ export default async function ProjectLayout({ children, params }: { children: Re
             userId: ctx.user.id,
             userName: ctx.user.name,
             role: ctx.role,
-            members: members.map(({ email: _e, ...m }) => m),
+            members: members.map((m) => ({ id: m.id, name: m.name, nickname: m.nickname, role: m.role, sector: m.sector, responsibilities: m.responsibilities })),
           }}
         >
           <Shell

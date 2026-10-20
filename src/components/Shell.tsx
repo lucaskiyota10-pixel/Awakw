@@ -44,9 +44,11 @@ export function Shell({ children, notifications, logoUrl, brandName }: { childre
     es.onmessage = (ev) => {
       try {
         const e = JSON.parse(ev.data);
-        if (e.type === "presence") return;
-        if (e.userId && e.userId !== p.userId && e.type === "notification") return;
+        if (e.type === "hello") return;
         window.dispatchEvent(new CustomEvent("acl:event", { detail: e }));
+        if (e.type === "presence") return;
+        if (e.type === "notification" && e.userId !== p.userId) return;
+        if (e.type === "document" && e.userId === p.userId) return; // não interrompe quem está editando
         if (refreshTimer.current) clearTimeout(refreshTimer.current);
         refreshTimer.current = setTimeout(() => router.refresh(), 400);
       } catch {}
