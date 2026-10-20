@@ -28,6 +28,8 @@ Leva uns 15 minutos. Tudo é feito pelo navegador.
      postgresql://neondb_owner:SENHA@ep-xxxx-xxxx.us-east-1.aws.neon.tech/neondb?sslmode=require
      ```
    - Ela precisa terminar com `?sslmode=require`. Se não terminar, acrescente.
+   - Se terminar com `?sslmode=require&channel_binding=require`, apague o trecho `&channel_binding=require` e deixe só `?sslmode=require`.
+   - Confira se a senha aparece de verdade, e não como `****`. Se aparecer `****`, clique em **Show password** antes de copiar.
 5. Guarde essa string. Ela é a **senha do banco**: não publique nem coloque no código.
 
 ## Passo 2 — Criar o site no Render
