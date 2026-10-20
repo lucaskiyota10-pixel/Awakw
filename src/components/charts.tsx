@@ -103,12 +103,12 @@ export function Chart({
 export function Stat({ label, value, hint, tone }: { label: React.ReactNode; value: React.ReactNode; hint?: React.ReactNode; tone?: "sim" | "real" }) {
   return (
     <div className="rounded-xl border border-areia bg-white p-4">
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-1">
         <p className="text-[11px] uppercase tracking-wide text-carvao/60">{label}</p>
         {tone === "sim" && <span className="badge bg-areia text-carvao">hipotético</span>}
         {tone === "real" && <span className="badge bg-emerald-100 text-emerald-800">real</span>}
       </div>
-      <p className="mt-1 font-serif text-3xl leading-tight">{value}</p>
+      <p className="mt-1 break-words font-serif text-2xl leading-tight sm:text-3xl">{value}</p>
       {hint && <p className="mt-1 text-xs text-carvao/60">{hint}</p>}
     </div>
   );

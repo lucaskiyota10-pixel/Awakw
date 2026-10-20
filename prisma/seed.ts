@@ -147,7 +147,7 @@ async function main() {
       responsibleIds: [ids.isabely, ids.juh],
       status: "PLANNING",
       abTests: [
-        { id: "ab1", variable: "CREATIVE", hypothesis: "Reels de processo de produção geram mais cliques que foto estática do produto", a: { label: "Foto estática", ctr: 0.01, conversionRate: 0.02 }, b: { label: "Reels de processo", ctr: 0.014, conversionRate: 0.02 }, metric: "CTR" },
+        { id: "ab1", variable: "CREATIVE", budget: 1000, cpm: 25, ticket: 350, hypothesis: "Reels de processo de produção geram mais cliques que foto estática do produto", a: { label: "Foto estática", ctr: 0.01, conversionRate: 0.02 }, b: { label: "Reels de processo", ctr: 0.014, conversionRate: 0.02 }, metric: "CTR" },
       ] as Prisma.InputJsonValue,
       createdById: ids.isabely,
     },
