@@ -1,0 +1,686 @@
+// AWAKE CAMPAIGN LAB — modelo de dados
+// Isolamento: toda entidade de trabalho pertence a um Project, que pertence a uma Agency.
+// O acesso é concedido por Membership (usuário ↔ agência, com papel).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  COORDINATOR
+  MEMBER
+  VIEWER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  AWAITING_APPROVAL
+  APPROVED
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ChannelType {
+  GENERAL
+  SECTOR
+  GROUP
+  DIRECT
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+enum DecisionStatus {
+  PROPOSED
+  IN_DISCUSSION
+  APPROVED
+  REJECTED
+}
+
+enum PublicationType {
+  FEED
+  CAROUSEL
+  REEL
+  STORY
+}
+
+enum ScenarioKind {
+  METRICS
+  GROWTH
+}
+
+enum ScenarioLevel {
+  CONSERVATIVE
+  MODERATE
+  OPTIMISTIC
+  CUSTOM
+}
+
+enum ReviewStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  nickname     String?
+  passwordHash String
+  isDemo       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions      Session[]
+  resetTokens   PasswordResetToken[]
+  memberships   Membership[]
+  notifications Notification[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Agency {
+  id          String       @id @default(cuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  memberships Membership[]
+  invites     Invite[]
+  projects    Project[]
+}
+
+model Membership {
+  id               String   @id @default(cuid())
+  userId           String
+  agencyId         String
+  role             Role     @default(MEMBER)
+  sector           String?
+  responsibilities String?
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agency           Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, agencyId])
+}
+
+model Invite {
+  id               String    @id @default(cuid())
+  agencyId         String
+  agency           Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  email            String
+  name             String?
+  role             Role      @default(MEMBER)
+  sector           String?
+  responsibilities String?
+  tokenHash        String    @unique
+  invitedById      String
+  expiresAt        DateTime
+  acceptedAt       DateTime?
+  createdAt        DateTime  @default(now())
+}
+
+model Project {
+  id                    String    @id @default(cuid())
+  agencyId              String
+  agency                Agency    @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  name                  String
+  alternateName         String?
+  officialNameConfirmed Boolean   @default(false)
+  segment               String?
+  launchDate            DateTime?
+  launchDateConfirmed   Boolean   @default(false)
+  /// briefing estruturado (produtos, diferenciais, público, objetivos, arquétipos, tom...)
+  briefing              Json      @default("{}")
+  /// identidade visual configurável (cores, fontes, logo, opção "rosa modernidade")
+  brand                 Json      @default("{}")
+  /// dados acadêmicos (faculdade, curso, disciplina, professor...)
+  academic              Json      @default("{}")
+  isDemo                Boolean   @default(false)
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  tasks         Task[]
+  channels      Channel[]
+  decisions     Decision[]
+  approvals     Approval[]
+  comments      Comment[]
+  files         FileAsset[]
+  notifications Notification[]
+  audit         AuditLog[]
+  igProfile     InstagramProfile?
+  highlights    Highlight[]
+  publications  Publication[]
+  campaigns     Campaign[]
+  scenarios     Scenario[]
+  budgetPlans   BudgetPlan[]
+  milestones    Milestone[]
+  competitors   Competitor[]
+  swotItems     SwotItem[]
+  diagnostics   DiagnosticItem[]
+  measurement   MeasurementItem[]
+  pixelEvents   PixelEvent[]
+  utmLinks      UtmLink[]
+  checklist     ChecklistItem[]
+  weeklyReports WeeklyReport[]
+  metricEntries MetricEntry[]
+  documents     Document[]
+  references    Reference[]
+}
+
+model Task {
+  id          String     @id @default(cuid())
+  projectId   String
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  sector      String?
+  assigneeId  String?
+  dueDate     DateTime?
+  /// [{id, text, done}]
+  checklist   Json       @default("[]")
+  /// ids de tarefas das quais esta depende
+  dependsOn   String[]   @default([])
+  order       Float      @default(0)
+  createdById String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([projectId, status])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  authorId   String
+  /// task | decision | publication | scenario | document | campaign
+  targetType String
+  targetId   String
+  body       String
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+}
+
+model Channel {
+  id        String      @id @default(cuid())
+  projectId String
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name      String
+  type      ChannelType
+  sector    String?
+  /// membros (para GROUP e DIRECT); GENERAL/SECTOR são abertos a todo o projeto
+  memberIds String[]    @default([])
+  createdAt DateTime    @default(now())
+  messages  Message[]
+}
+
+model Message {
+  id          String    @id @default(cuid())
+  channelId   String
+  channel     Channel   @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  authorId    String
+  body        String
+  parentId    String?
+  /// vínculo opcional: task | document | decision
+  linkType    String?
+  linkId      String?
+  fileIds     String[]  @default([])
+  mentions    String[]  @default([])
+  createdAt   DateTime  @default(now())
+  editedAt    DateTime?
+
+  @@index([channelId, createdAt])
+}
+
+model FileAsset {
+  id         String   @id @default(cuid())
+  projectId  String
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploaderId String
+  name       String
+  mime       String
+  size       Int
+  storageKey String   @unique
+  folder     String?
+  createdAt  DateTime @default(now())
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  body      String?
+  link      String?
+  dedupeKey String?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@unique([userId, dedupeKey])
+  @@index([userId, readAt])
+}
+
+model Decision {
+  id             String         @id @default(cuid())
+  projectId      String
+  project        Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title          String
+  proposal       String
+  status         DecisionStatus @default(PROPOSED)
+  responsibleIds String[]       @default([])
+  dueDate        DateTime?
+  decidedAt      DateTime?
+  decidedById    String?
+  decisionNote   String?
+  createdById    String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model Approval {
+  id            String         @id @default(cuid())
+  projectId     String
+  project       Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  targetType    String
+  targetId      String
+  targetLabel   String
+  status        ApprovalStatus @default(PENDING)
+  requestedById String
+  decidedById   String?
+  note          String?
+  createdAt     DateTime       @default(now())
+  decidedAt     DateTime?
+
+  @@index([projectId, status])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  data      Json?
+  createdAt DateTime @default(now())
+
+  @@index([projectId, createdAt])
+}
+
+model InstagramProfile {
+  id                    String  @id @default(cuid())
+  projectId             String  @unique
+  project               Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  displayName           String
+  username              String
+  category              String?
+  bio                   String?
+  link                  String?
+  avatarFileId          String?
+  hypotheticalFollowers Int     @default(0)
+  hypotheticalFollowing Int     @default(0)
+}
+
+model Highlight {
+  id          String  @id @default(cuid())
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  coverFileId String?
+  coverColor  String?
+  order       Int     @default(0)
+}
+
+model Publication {
+  id                   String          @id @default(cuid())
+  projectId            String
+  project              Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type                 PublicationType @default(FEED)
+  title                String
+  caption              String?
+  hashtags             String?
+  cta                  String?
+  mediaFileIds         String[]        @default([])
+  coverColor           String?
+  scheduledAt          DateTime?
+  objective            String?
+  journeyStage         String?
+  product              String?
+  responsibleId        String?
+  campaignId           String?
+  /// fluxo: DRAFT → WRITING → CREATIVE → PLANNING_REVIEW → ACCOUNT_REVIEW → APPROVED → SCHEDULED
+  status               String          @default("DRAFT")
+  feedOrder            Float           @default(0)
+  hypotheticalLikes    Int?
+  hypotheticalComments Int?
+  hypotheticalViews    Int?
+  createdById          String
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  versions             PublicationVersion[]
+}
+
+model PublicationVersion {
+  id            String      @id @default(cuid())
+  publicationId String
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  version       Int
+  caption       String?
+  hashtags      String?
+  cta           String?
+  mediaFileIds  String[]    @default([])
+  note          String?
+  authorId      String
+  createdAt     DateTime    @default(now())
+}
+
+model Campaign {
+  id             String   @id @default(cuid())
+  projectId      String
+  project        Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name           String
+  /// AWARENESS | ENGAGEMENT | TRAFFIC | LEADS | CONVERSION | REMARKETING
+  objective      String
+  audience       String?
+  segmentation   String?
+  positioning    String?
+  message        String?
+  products       String?
+  channels       String?
+  formats        String?
+  budget         Float?
+  startDate      DateTime?
+  endDate        DateTime?
+  kpis           String?
+  creatives      String?
+  responsibleIds String[] @default([])
+  status         String   @default("PLANNING")
+  /// testes A/B simulados [{id, variable, hypothesis, a:{label, ctr, conv}, b:{...}, metric}]
+  abTests        Json     @default("[]")
+  createdById    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Scenario {
+  id          String        @id @default(cuid())
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  kind        ScenarioKind
+  level       ScenarioLevel @default(CUSTOM)
+  name        String
+  /// premissas: { valores..., sources: { chave: { origin, note } } }
+  premises    Json
+  status      ReviewStatus  @default(DRAFT)
+  approvedById String?
+  approvedAt  DateTime?
+  duplicatedFromId String?
+  authorId    String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model BudgetPlan {
+  id           String   @id @default(cuid())
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name         String
+  total        Float
+  /// [{key, label, amount}]
+  allocations  Json
+  /// PROPOSED (sugestão/proposta) | APPROVED
+  status       String   @default("PROPOSED")
+  isSuggestion Boolean  @default(false)
+  note         String?
+  authorId     String
+  approvedById String?
+  approvedAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Milestone {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  date        DateTime
+  /// LAUNCH | MONTH1 | QUARTER | SEMESTER | YEAR | CUSTOM
+  kind        String   @default("CUSTOM")
+  description String?
+}
+
+model Competitor {
+  id             String    @id @default(cuid())
+  projectId      String
+  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name           String
+  website        String?
+  socials        String?
+  positioning    String?
+  products       String?
+  observedPrices String?
+  differentials  String?
+  sources        String?
+  observedAt     DateTime?
+  notes          String?
+  fileIds        String[]  @default([])
+  createdAt      DateTime  @default(now())
+}
+
+model SwotItem {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// S | W | O | T  (S/W internos, O/T externos)
+  quadrant  String
+  text      String
+  /// EVIDENCE | HYPOTHESIS
+  basis     String   @default("HYPOTHESIS")
+  evidence  String?
+  source    String?
+  taskId    String?
+  createdAt DateTime @default(now())
+}
+
+model DiagnosticItem {
+  id        String  @id @default(cuid())
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// INSTAGRAM | SITE | ECOMMERCE | ACCESS | TOOLS | OPERATION | PENDING
+  area      String
+  item      String
+  status    String  @default("PENDING")
+  notes     String?
+}
+
+model MeasurementItem {
+  id          String  @id @default(cuid())
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  objective   String
+  event       String
+  responsible String?
+  status      String  @default("PLANNED")
+  evidence    String?
+}
+
+model PixelEvent {
+  id          String  @id @default(cuid())
+  projectId   String
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  trigger     String?
+  parameters  String?
+  consent     String?
+  dedup       String?
+  testPlan    String?
+  /// PLANNED | IMPLEMENTED_UNVALIDATED | VALIDATED (exige evidência)
+  status      String  @default("PLANNED")
+  evidence    String?
+  order       Int     @default(0)
+}
+
+model UtmLink {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  baseUrl   String
+  source    String
+  medium    String
+  campaign  String
+  content   String?
+  term      String?
+  url       String
+  authorId  String
+  createdAt DateTime @default(now())
+}
+
+model ChecklistItem {
+  id        String    @id @default(cuid())
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  /// DAILY | LAUNCH
+  list      String
+  text      String
+  done      Boolean   @default(false)
+  doneById  String?
+  doneAt    DateTime?
+  order     Int       @default(0)
+}
+
+model WeeklyReport {
+  id              String   @id @default(cuid())
+  projectId       String
+  project         Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  weekStart       DateTime
+  hypotheses      String?
+  problems        String?
+  recommendations String?
+  authorId        String
+  createdAt       DateTime @default(now())
+}
+
+/// Dados REAIS informados manualmente pela equipe (não simulados)
+model MetricEntry {
+  id          String   @id @default(cuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date        DateTime
+  channel     String
+  reach       Int?
+  impressions Int?
+  clicks      Int?
+  spend       Float?
+  sessions    Int?
+  conversions Int?
+  revenue     Float?
+  source      String
+  authorId    String
+  createdAt   DateTime @default(now())
+}
+
+model Document {
+  id                String         @id @default(cuid())
+  projectId         String
+  project           Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title             String
+  kind              String         @default("FREE")
+  content           String         @default("")
+  version           Int            @default(1)
+  status            ReviewStatus   @default(DRAFT)
+  approvedVersion   Int?
+  approvedById      String?
+  approvedAt        DateTime?
+  createdById       String
+  updatedById       String
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  versions          DocumentVersion[]
+  suggestions       DocumentSuggestion[]
+}
+
+model DocumentVersion {
+  id           String   @id @default(cuid())
+  documentId   String
+  document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  version      Int
+  content      String
+  authorId     String
+  charsAdded   Int      @default(0)
+  charsRemoved Int      @default(0)
+  note         String?
+  createdAt    DateTime @default(now())
+
+  @@unique([documentId, version])
+}
+
+model DocumentSuggestion {
+  id           String   @id @default(cuid())
+  documentId   String
+  document     Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  authorId     String
+  original     String
+  replacement  String
+  note         String?
+  /// OPEN | ACCEPTED | REJECTED
+  status       String   @default("OPEN")
+  resolvedById String?
+  createdAt    DateTime @default(now())
+}
+
+/// Referências bibliográficas cadastradas pela equipe (nunca geradas automaticamente)
+model Reference {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  abnt      String
+  url       String?
+  accessedAt DateTime?
+  createdAt DateTime @default(now())
+}

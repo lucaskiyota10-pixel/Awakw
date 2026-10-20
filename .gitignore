@@ -1,0 +1,10 @@
+node_modules
+.next
+.env
+.env.local
+uploads/*
+!uploads/.gitkeep
+*.tsbuildinfo
+next-env.d.ts
+test-results
+/tmp
